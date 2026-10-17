@@ -14,6 +14,13 @@ GJ_reform_industry = {
 GJ_reform_military = {
 	icon = GFX_idea_generic_political_pressure
 	enable = { always = yes }
+	land_reinforce_rate = GJ_land_reinforce_rate
+	army_speed_factor = GJ_army_speed_factor
+	experience_gain_army_unit_factor = GJ_experience_gain_army_unit_factor
+	training_time_army_factor = GJ_training_time_army_factor
+	air_cas_efficiency = GJ_air_cas_efficiency
+	special_forces_cap_flat = GJ_special_forces_cap_flat
+	send_volunteer_size = GJ_send_volunteer_size
 	conscription = GJ_conscription
 	production_speed_bunker_factor = GJ_production_speed_bunker_factor
 	production_speed_coastal_bunker_factor = GJ_production_speed_coastal_bunker_factor
