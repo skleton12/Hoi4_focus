@@ -1,0 +1,500 @@
+"""설계 데이터(data/*.json)를 「기본 중점 변경 모드」 파일로 옮긴다.
+
+    python3 design/generic_tree/build_mod.py
+
+만드는 것 (mod/gibon_jungjeom/ 아래):
+  common/national_focus/generic.txt                  바닐라 기본 트리를 같은 경로로 덮어쓴다
+  localisation/english/gibon_jungjeom_l_english.yml  포커스 이름·설명·효과 안내 (UTF-8 BOM)
+
+시험판이다. 효과 요약 중 확실히 옮길 수 있는 것(정치력, 공장, 안정도, 전쟁 지원, 경험치, 연구 슬롯,
+정부 교체)만 실제 효과로 바꾸고, 나머지는 설계 문구를 효과 안내(custom_effect_tooltip)로 보여 준다.
+"""
+import json
+import re
+from pathlib import Path
+
+from tree_layout import layout, parents_of
+
+HERE = Path(__file__).parent
+DATA = HERE / "data"
+MOD = HERE.parent.parent / "mod" / "gibon_jungjeom"
+PREFIX = "GJ"
+# HOI4 supports these 10 localization languages. Reuse the English source text
+# under each locale so the focus tree remains readable with any game language.
+LOCALISATION_LANGUAGES = (
+    "english", "french", "german", "polish", "braz_por",
+    "russian", "spanish", "japanese", "simp_chinese", "korean",
+)
+
+ICONS = {
+    "start": "GFX_GJ_political_pressure",
+    "industry": "GFX_GJ_construct_civ_factory",
+    "military": "GFX_GJ_army_doctrines",
+    "politics": "GFX_GJ_political_pressure",
+    "diplomacy": "GFX_GJ_major_alliance",
+    "terrain": "GFX_GJ_construct_infrastructure",
+    "independence": "GFX_GJ_political_pressure",
+    "late": "GFX_GJ_production",
+}
+
+# 조건 문구 → (allow_branch | available, 트리거). allow_branch 는 트리를 처음 불러올 때 한 번만 보므로
+# 지형·지역처럼 변하지 않는 조건에만 쓰고, 전쟁·속국 여부처럼 바뀌는 조건은 available 로 건다.
+CONDITIONS = {
+    "해안 주 보유": ("allow_branch", "any_owned_state = { is_coastal = yes }"),
+    "해안 없음": ("allow_branch", "NOT = { any_owned_state = { is_coastal = yes } }"),
+    "섬 국가": ("allow_branch", "capital_scope = { is_coastal = yes }"),
+    "옛 왕가 존재": ("available", "always = yes"),
+    "국교 국가": ("available", "always = yes"),
+    "숨은 조건": ("available", "always = yes"),
+    "종주국 보유": ("available", "is_subject = yes"),
+    "괴뢰국 보유": ("available", "num_subjects > 0"),
+    # 자치도 단계 이름은 1.19.3 게임 파일(common/autonomous_states/)에서 확인 필요. 틀리면 그 칸만 열리지 않는다.
+    "판무관부": ("available", "has_autonomy_state = autonomy_reichskommissariat"),
+    "협력정부": ("available", "has_autonomy_state = autonomy_collaboration_government"),
+    "독립 달성 후": ("available", "is_subject = no"),
+    "전쟁 종료 후": ("available", "has_war = no"),
+    "전쟁 중": ("available", "has_war = yes"),
+    "수도 피점령": ("available", "capital_scope = { NOT = { is_controlled_by = ROOT } }"),
+    "본토 해방 후": ("available", "capital_scope = { is_controlled_by = ROOT }"),
+    "전쟁 중 전쟁 지원 30% 미만": ("available", "has_war = yes has_war_support < 0.3"),
+}
+# 집권 경로 조건은 해당 경로의 마지막 칸을 끝냈는지로 본다
+ROUTE_CONDITIONS = {"무장 봉기로 집권": "com_war", "군부 쿠데타로 집권": "neu_war"}
+
+IDEOLOGY = {"공산주의": "communism", "민주주의": "democratic", "파시즘": "fascism", "비동맹": "neutrality"}
+PARTY = {"공산주의": "communism", "공산": "communism", "민주주의": "democratic", "민주": "democratic",
+         "파시즘": "fascism", "비동맹": "neutrality"}
+# 분야별 연구 보너스 → add_tech_bonus 범주 (바닐라 기술 범주 중 확실한 것만)
+TECH = {"보병 장비": "infantry_weapons", "포병": "artillery", "대전차": "artillery", "기갑": "armor",
+        "레이더": "radar_tech", "전자 공학": "electronics", "전자": "electronics", "로켓": "rocketry",
+        "핵": "nuclear", "제트 엔진": "jet_engine", "합성": "synth_resources", "합성 정유소": "synth_resources",
+        "합성 고무": "synth_resources", "산업": "industry", "전투기": "light_fighter", "근접 지원기": "cas_bomber"}
+
+
+def num(text, pattern):
+    m = re.search(pattern, text)
+    return int(m.group(1)) if m else None
+
+
+def fnum(text, pattern):
+    m = re.search(pattern, text)
+    return float(m.group(1)) if m else None
+
+
+# 퍼센트형 효과는 국가 정신 수백 개 대신 동적 수정자 셋(산업·군사·국정 개혁)에 변수로 쌓는다.
+# (효과 문구 패턴, 수정자 이름, 값 배율, 정신)
+MODIFIERS = [
+    (r"징집 인력 \+(\d+)%", "conscription", 0.01, "mil"),
+    (r"일일 정치력 ([+-][\d.]+)", "political_power_gain", 1, "state"),
+    (r"정치력 획득 \+(\d+)%", "political_power_factor", 0.01, "state"),
+    (r"(?<!획득 )정치력 \+(\d+)%", "political_power_factor", 0.01, "state"),
+    (r"공장 생산량 \+(\d+)%", "industrial_capacity_factory", 0.01, "ind"),
+    (r"소비재 공장 ([+-]\d+)%", "consumer_goods_factor", 0.01, "ind"),
+    (r"(?<![가-힣] )연구 속도 \+(\d+)%", "research_speed_factor", 0.01, "ind"),
+    (r"생산 효율 상한 \+(\d+)%", "production_factory_max_efficiency_factor", 0.01, "ind"),
+    (r"생산 효율 증가 \+(\d+)%", "production_factory_efficiency_gain_factor", 0.01, "ind"),
+    (r"라인 전환 효율 \+(\d+)%", "line_change_production_efficiency_factor", 0.01, "ind"),
+    (r"민간공장 건설 속도 \+(\d+)%", "production_speed_industrial_complex_factor", 0.01, "ind"),
+    (r"(?<!강철·텅스텐 )자원 추출 \+(\d+)%", "local_resources_factor", 0.01, "ind"),
+    (r"(?<!해안 )요새 건설 속도 \+(\d+)%", "production_speed_bunker_factor", 0.01, "mil"),
+    (r"해안 요새 건설 속도 \+(\d+)%", "production_speed_coastal_bunker_factor", 0.01, "mil"),
+    (r"보급 소모 (-\d+)%", "supply_consumption_factor", 0.01, "mil"),
+    (r"방어전 \+(\d+)%", "army_defence_factor", 0.01, "mil"),
+    (r"사단 조직력 \+(\d+)%", "army_org_factor", 0.01, "mil"),
+    (r"참호 효과 \+(\d+)%", "max_dig_in_factor", 0.01, "mil"),
+    (r"연료 저장량 \+(\d+)%", "max_fuel_factor", 0.01, "mil"),
+    (r"항복 한계 \+(\d+)%", "surrender_limit", 0.01, "mil"),
+    (r"정당화 기간 (-\d+)%", "justify_war_goal_time", 0.01, "state"),
+    (r"전쟁 목표 긴장도 (-\d+)%", "generate_wargoal_tension", 0.01, "state"),
+    (r"이념 침투 방어 \+(\d+)%", "drift_defence_factor", 0.01, "state"),
+    (r"공산주의 일일 지지 ([+-][\d.]+)", "communism_drift", 1, "state"),
+    (r"민주주의 일일 지지 ([+-][\d.]+)", "democratic_drift", 1, "state"),
+    (r"파시즘 일일 지지 ([+-][\d.]+)", "fascism_drift", 1, "state"),
+    (r"비동맹 일일 지지 ([+-][\d.]+)", "neutrality_drift", 1, "state"),
+    (r"고문 영입 비용 (-\d+)%", "political_advisor_cost_factor", 0.01, "state"),
+    (r"점령지 저항 (-\d+)%", "resistance_target", 0.01, "state"),
+    (r"준수 증가 \+(\d+)%", "compliance_growth", 0.01, "state"),
+]
+SPIRITS = {
+    "ind": ("GJ_reform_industry", "산업 개혁", "GFX_idea_generic_political_pressure"),
+    "mil": ("GJ_reform_military", "군사 개혁", "GFX_idea_generic_political_pressure"),
+    "state": ("GJ_reform_state", "국정 개혁", "GFX_idea_generic_political_pressure"),
+}
+FACTION = "GJ_regional_faction"
+RESOURCES = {"강철": "steel", "석유": "oil", "고무": "rubber", "알루미늄": "aluminium", "텅스텐": "tungsten", "크롬": "chromium"}
+ECONOMY_LAW_STEPS = {
+    "civilian_economy": "low_economic_mobilisation",
+    "low_economic_mobilisation": "partial_economic_mobilisation",
+    "partial_economic_mobilisation": "war_economy",
+    "war_economy": "tot_economic_mobilisation",
+}
+CONSCRIPTION_LAW_STEPS = {
+    "disarmed_nation": "volunteer_only",
+    "volunteer_only": "limited_conscription",
+    "limited_conscription": "extensive_conscription",
+    "extensive_conscription": "service_by_requirement",
+    "service_by_requirement": "all_adults_serve",
+    "all_adults_serve": "scraping_the_barrel",
+}
+
+# 정치 중점이 후보를 등록하면 플레이어가 정치력으로 임명할 수 있는 범용 고문.
+# 정치고문 특성은 바닐라에서 널리 쓰이는 공용 trait만 사용한다.
+ADVISORS = {
+    "공산 고문 후보 추가": ("GJ_com_reformer", "인민 조직가", "communist_revolutionary", "GFX_idea_generic_political_advisor_asia_1"),
+    "정치위원 고문 후보 추가": ("GJ_com_commissar", "정치위원", "communist_revolutionary", "GFX_idea_generic_political_advisor_asia_2"),
+    "경제 고문 후보 추가": ("GJ_com_planner", "계획 경제 전문가", "captain_of_industry", "GFX_idea_generic_political_advisor_asia_3"),
+    "산업 고문 후보 추가": ("GJ_dem_industrialist", "산업 기술관료", "captain_of_industry", "GFX_idea_generic_political_advisor_asia_1"),
+    "선전 고문 후보 추가": ("GJ_fas_demagogue", "국민 선전가", "fascist_demagogue", "GFX_idea_generic_political_advisor_asia_2"),
+    "군수 고문 후보 추가": ("GJ_fas_industrialist", "군수 산업가", "war_industrialist", "GFX_idea_generic_political_advisor_asia_3"),
+    "재무 고문 후보 추가": ("GJ_neu_economist", "재무 전문가", "silent_workhorse", "GFX_idea_generic_political_advisor_asia_1"),
+}
+
+
+def state_count(effect, word):
+    m = re.search(word + r" \+\d+ \((\d+)개 주\)", effect)
+    return int(m.group(1)) if m else 1
+
+
+def rewards(effect):
+    """효과 요약에서 확실한 것만 실제 효과로 바꾼다."""
+    out = []
+    for description, (character, _, _, _) in ADVISORS.items():
+        if description in effect:
+            out.append(f"recruit_character = {character}")
+    if (n := num(effect, r"(?<!일일 )(?<!획득 )정치력 \+(\d+)(?![\d%])")):
+        out.append(f"add_political_power = {n}")
+    if (n := num(effect, r"민간공장 \+(\d+)(?![\d%])")):
+        out.append(f"add_offsite_building = {{ type = industrial_complex level = {n} }}")
+    if (n := num(effect, r"군수공장 \+(\d+)(?![\d%])")):
+        out.append(f"add_offsite_building = {{ type = arms_factory level = {n} }}")
+    if (n := num(effect, r"해군 조선소 \+(\d+)")):
+        out.append(f"add_offsite_building = {{ type = dockyard level = {n} }}")
+    if (n := num(effect, r"(?<!괴뢰국 )안정도 ([+-]\d+)%")):
+        out.append(f"add_stability = {n / 100:.2f}")
+    if (n := num(effect, r"괴뢰국 안정도 \+(\d+)%")):
+        out.append(f"every_subject_country = {{ add_stability = {n / 100:.2f} }}")
+    if (n := num(effect, r"전쟁 지원 ([+-]\d+)%")):
+        out.append(f"add_war_support = {n / 100:.2f}")
+    if (n := num(effect, r"육군 경험 ([+-]\d+)")):
+        out.append(f"army_experience = {n}")
+    if (n := num(effect, r"해군 경험 ([+-]\d+)")):
+        out.append(f"navy_experience = {n}")
+    if (n := num(effect, r"공군 경험 ([+-]\d+)")):
+        out.append(f"air_experience = {n}")
+    if (n := num(effect, r"연구 슬롯 \+(\d+)")):
+        out.append(f"add_research_slot = {n}")
+    if (n := num(effect, r"보병 장비 (\d+)(?: 획득)?(?![\d%])")):
+        out.append(f"add_equipment_to_stockpile = {{ type = infantry_equipment amount = {n} }}")
+    if (n := num(effect, r"수송선 \+(\d+)(?![\d%])")):
+        out.append(f"add_equipment_to_stockpile = {{ type = convoy amount = {n} }}")
+    if num(effect, r"인프라 \+(\d+)"):
+        if "(수도)" in effect:
+            out.append("capital_scope = { add_building_construction = { type = infrastructure level = 1 instant_build = yes } }")
+        else:
+            for _ in range(state_count(effect, "인프라")):
+                out.append("random_owned_controlled_state = { limit = { infrastructure < 5 } "
+                           "add_building_construction = { type = infrastructure level = 1 instant_build = yes } }")
+    # 국가별 배치 대상은 달라도 건물 유형과 수량은 공통으로 적용할 수 있다.
+    for label, building in (("공군 기지", "air_base"), ("비행장", "air_base"), ("레이더", "radar_station")):
+        if re.search(re.escape(label) + r" \+1", effect):
+            state_limit = "is_on_border = yes " if "(국경 주)" in effect else ""
+            state_flag = f"GJ_temp_{building}_target"
+            for _ in range(state_count(effect, label)):
+                out.append(f"random_owned_controlled_state = {{ limit = {{ NOT = {{ has_state_flag = {state_flag} }} "
+                           f"{state_limit}{building} < 5 }} "
+                           f"add_building_construction = {{ type = {building} level = 1 instant_build = yes }} "
+                           f"set_state_flag = {state_flag} }}")
+            out.append(f"every_owned_state = {{ clr_state_flag = {state_flag} }}")
+    if "합성 정유소 +1" in effect:
+        out.append("random_owned_controlled_state = { limit = { synthetic_refinery < 5 } "
+                   "add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }")
+    if (n := num(effect, r"국경 주 요새 \+(\d+)")):
+        out.append(f"random_owned_controlled_state = {{ limit = {{ is_on_border = yes land_fort < 10 }} "
+                   f"add_building_construction = {{ type = land_fort level = {n} instant_build = yes }} }}")
+    if (n := num(effect, r"건물 슬롯 \+(\d+)")):
+        for _ in range(state_count(effect, "건물 슬롯")):
+            out.append(f"random_owned_controlled_state = {{ add_extra_state_shared_building_slots = {n} }}")
+    for word, res in RESOURCES.items():
+        if (n := num(effect, word + r" \+(\d+)(?![\d%])")):
+            out.append(f"random_owned_controlled_state = {{ add_resource = {{ type = {res} amount = {n} }} }}")
+    for bloc, leader in (("연합국", "ENG"), ("추축국", "GER"), ("코민테른", "SOV")):
+        if re.search(bloc + r" 가입(?! 가능)", effect):
+            out.append(f"if = {{ limit = {{ {leader} = {{ is_faction_leader = yes }} }} {leader} = {{ add_to_faction = ROOT }} }}")
+    for who, tag in (("연합국", "ENG"), ("소련", "SOV")):
+        if f"{who} 보장 획득" in effect:
+            out.append(f"if = {{ limit = {{ country_exists = {tag} }} {tag} = {{ give_guarantee = ROOT }} }}")
+    if "자체 진영 생성" in effect:
+        out.append(f"if = {{ limit = {{ is_in_faction = no }} create_faction = {FACTION} }}")
+    if "정보 기관 설립" in effect:
+        out.append("create_intelligence_agency = yes")
+    for m in re.finditer(r"(?<!이웃국 )(?<![가-힣·])(공산주의|공산|민주주의|민주|파시즘|비동맹) 지지율 ([+-]\d+)%", effect):
+        out.append(f"add_popularity = {{ ideology = {PARTY[m.group(1)]} popularity = {int(m.group(2)) / 100:.2f} }}")
+    if (m := re.search(r"공산·파시즘 지지율 ([+-]\d+)%", effect)):
+        for ideo in ("communism", "fascism"):
+            out.append(f"add_popularity = {{ ideology = {ideo} popularity = {int(m.group(1)) / 100:.2f} }}")
+    if (m := re.search(r"(?<!괴뢰국 )자치도 ([+-]\d+)", effect)):
+        out.append(f"if = {{ limit = {{ is_subject = yes }} add_autonomy_score = {{ value = {int(m.group(1))} }} }}")
+    if (m := re.search(r"괴뢰국 자치도 ([+-]\d+)", effect)):
+        # 종주국이 모든 괴뢰국의 자치도를 올리거나 내린다
+        out.append(f"every_subject_country = {{ add_autonomy_score = {{ value = {int(m.group(1))} }} }}")
+    for word, tech in (("산악병", "tech_mountaineers"), ("해병", "tech_marines"), ("공수부대", "tech_paratroopers")):
+        if f"{word} 기술 획득" in effect:
+            out.append(f"set_technology = {{ {tech} = 1 }}")
+    for m in re.finditer(r"(?<![가-힣])([가-힣]+(?: [가-힣]+)?) 연구(?: 속도)? \+(\d+)%", effect):
+        if m.group(1) in TECH:
+            out.append(f"add_tech_bonus = {{ name = {{FID}} bonus = {int(m.group(2)) / 100:.2f} uses = 1 "
+                       f"category = {TECH[m.group(1)]} }}")
+    m = re.search(r"정부를 (공산주의|민주주의|파시즘|비동맹)(?:으)?로 교체", effect)
+    if m:
+        elections = "yes" if m.group(1) == "민주주의" else "no"
+        out.append(f"set_politics = {{ ruling_party = {IDEOLOGY[m.group(1)]} elections_allowed = {elections} }}")
+    if "경제법 한 단계 상향" in effect:
+        laws = list(ECONOMY_LAW_STEPS.items())
+        first, *rest = laws
+        out.append(f"if = {{ limit = {{ has_economy_law = {first[0]} }} set_economy = {first[1]} }}")
+        out.extend(f"else_if = {{ limit = {{ has_economy_law = {current} }} set_economy = {following} }}"
+                   for current, following in rest)
+    if "징병법 한 단계 상향" in effect:
+        laws = list(CONSCRIPTION_LAW_STEPS.items())
+        first, *rest = laws
+        out.append(f"if = {{ limit = {{ has_conscription_law = {first[0]} }} set_conscription = {first[1]} }}")
+        out.extend(f"else_if = {{ limit = {{ has_conscription_law = {current} }} set_conscription = {following} }}"
+                   for current, following in rest)
+
+    adds, spirits = [], []
+    for pattern, modifier, scale, spirit in MODIFIERS:
+        v = fnum(effect, pattern)
+        if v:
+            adds.append(f"add_to_variable = {{ var = GJ_{modifier} value = {v * scale:g} }}")
+            if spirit not in spirits:
+                spirits.append(spirit)
+    hidden = []
+    for spirit in spirits:
+        name = SPIRITS[spirit][0]
+        hidden.append(f"if = {{ limit = {{ NOT = {{ has_dynamic_modifier = {{ modifier = {name} }} }} }} "
+                      f"add_dynamic_modifier = {{ modifier = {name} }} }}")
+    if adds:
+        # 변수 조작은 툴팁에 날것(흰 글씨)으로 보이므로 숨기고, tooltip() 이 색을 입혀 따로 보여 준다
+        out.append("hidden_effect = { " + " ".join(hidden + adds) + " }")
+    return out
+
+
+# 값이 줄어야 좋은 항목 (음수가 초록)
+GOOD_WHEN_NEGATIVE = ("소비재 공장", "보급 소모", "정당화 기간", "전쟁 목표 긴장도", "고문 영입 비용", "점령지 저항",
+                      "교리 비용", "자원 수입 비용", "전략 폭격 피해", "사단 훈련 시간", "무역법 변경", "세계 긴장도")
+
+
+def colored(part):
+    m = re.search(r"([+-])(\d[\d.]*%?)", part)
+    if not m:
+        return part
+    good = (m.group(1) == "+") != any(k in part for k in GOOD_WHEN_NEGATIVE)
+    return part[:m.start()] + ("§G" if good else "§R") + m.group(0) + "§!" + part[m.end():]
+
+
+def tooltip(effect):
+    """게임이 스스로 보여 주지 않는 부분만 툴팁으로 만든다.
+    국가 정신에 쌓이는 % 효과는 색을 입혀 정신 이름과 함께, 아직 효과가 없는 문구는 회색으로."""
+    lines = []
+    for part in re.split(r",\s*", effect):
+        spirit = next((sp for pattern, _, _, sp in MODIFIERS if re.search(pattern, part)), None)
+        if spirit:
+            lines.append(f"§Y{SPIRITS[spirit][1]}§!: {colored(part)}")
+        elif not rewards(part):
+            lines.append(f"§g{part} (준비 중)§!")
+    return "\\n".join(lines)
+
+
+def effect_implementation(effect):
+    """효과를 쉼표 단위로 분류해 구현 완료·부분 구현·미구현 수를 센다."""
+    parts = [part.strip() for part in re.split(r",\s*", effect) if part.strip()]
+    missing = [part for part in parts if not rewards(part)]
+    implemented = len(parts) - len(missing)
+    return implemented, len(missing)
+
+
+def dynamic_modifier_file():
+    text = "# build_mod.py 가 만든 파일이다. 포커스가 GJ_<수정자> 변수에 값을 더하면 여기서 반영된다.\n"
+    for spirit, (name, _, icon) in SPIRITS.items():
+        seen = []
+        for _, modifier, _, owner in MODIFIERS:
+            if owner == spirit and modifier not in seen:
+                seen.append(modifier)
+        body = "\n".join(f"\t{m} = GJ_{m}" for m in seen)
+        text += f"{name} = {{\n\ticon = {icon}\n\tenable = {{ always = yes }}\n{body}\n}}\n"
+    return text
+
+
+def characters_file():
+    """중점에서 등록하는 범용 정치고문을 생성한다."""
+    text = ["# build_mod.py 가 만든 파일이다. 정치 중점으로 후보를 등록한다.", "characters = {"]
+    for _, (character, _, trait, portrait) in ADVISORS.items():
+        text += [
+            f"\t{character} = {{",
+            f"\t\tname = {character}",
+            "\t\tportraits = {",
+            "\t\t\tcivilian = {",
+            f"\t\t\t\tsmall = {portrait}",
+            "\t\t\t}",
+            "\t\t}",
+            "\t\tadvisor = {",
+            "\t\t\tslot = political_advisor",
+            f"\t\t\tidea_token = {character}",
+            "\t\t\tallowed = { always = yes }",
+            f"\t\t\ttraits = {{ {trait} }}",
+            "\t\t\tcost = 150",
+            "\t\t}",
+            "\t}",
+        ]
+    text.append("}")
+    return "\n".join(text) + "\n"
+
+
+def rows_for(groups):
+    """소갈래마다 시작 줄(y)을 정한다. 합류는 부모들이 모두 끝난 다음 줄."""
+    by_id = {g["id"]: g for g in groups}
+    start = {}
+
+    def row(g):
+        if g["id"] not in start:
+            ps = parents_of(g)
+            start[g["id"]] = max((row(by_id[p]) + len(by_id[p]["focuses"]) for p in ps), default=0)
+        return start[g["id"]]
+
+    for g in groups:
+        row(g)
+    return start
+
+
+def focus_id(gid, i):
+    return f"{PREFIX}_{gid}_{i}"
+
+
+def build():
+    branches = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(DATA.glob("*.json"))]
+    lines = [
+        "# 「기본 중점 변경 모드」 — design/generic_tree/build_mod.py 가 만든 파일이다. 직접 고치지 말 것.",
+        "# 바닐라 common/national_focus/generic.txt 를 같은 경로로 덮어써 기본 트리를 바꾼다.",
+        "focus_tree = {",
+        "\tid = generic_focus",
+        "",
+        "\tcountry = {",
+        "\t\tfactor = 1",
+        "\t}",
+        "",
+        "\tdefault = yes",
+        "",
+        "\tcontinuous_focus_position = { x = 50 y = 1600 }",
+    ]
+    loc = ["﻿l_english:"]
+    x_offset = 0
+    route_last = {}
+    for b in branches:
+        for g in b["groups"]:
+            if g["id"] in ROUTE_CONDITIONS.values():
+                route_last[g["id"]] = focus_id(g["id"], len(g["focuses"]))
+
+    unknown = set()
+    fully_implemented = partial_implementation = tooltip_only = 0
+    for b in branches:
+        groups = b["groups"]
+        pos, cols = layout(groups)
+        start = rows_for(groups)
+        icon = ICONS.get(b["branch"], "GFX_goal_unknown")
+        lines += ["", "\t" + "#" * 60, f"\t# {b['title']}", "\t" + "#" * 60]
+
+        siblings = {}
+        for g in groups:
+            if g["exclusive"]:
+                siblings.setdefault((g["exclusive"], str(g["after"])), []).append(g["id"])
+
+        for g in groups:
+            x = x_offset + int(round(pos[g["id"]][0] * 2))
+            for i, f in enumerate(g["focuses"], 1):
+                fid = focus_id(g["id"], i)
+                block = [f"\tfocus = {{", f"\t\tid = {fid}", f"\t\ticon = {icon}",
+                         f"\t\tx = {x}", f"\t\ty = {start[g['id']] + i - 1}",
+                         f"\t\tcost = {f['days'] // 7}"]
+                if i == 1:
+                    ps = parents_of(g)
+                    if ps:
+                        ors = " ".join(f"focus = {focus_id(p, len(next(x for x in groups if x['id'] == p)['focuses']))}" for p in ps)
+                        block.append(f"\t\tprerequisite = {{ {ors} }}")
+                    if g["exclusive"]:
+                        others = [o for o in siblings[(g["exclusive"], str(g["after"]))] if o != g["id"]]
+                        if others:
+                            block.append("\t\tmutually_exclusive = { " + " ".join(f"focus = {focus_id(o, 1)}" for o in others) + " }")
+                    cond = g["condition"]
+                    if cond in ROUTE_CONDITIONS:
+                        block.append(f"\t\tavailable = {{ has_completed_focus = {route_last[ROUTE_CONDITIONS[cond]]} }}")
+                    elif cond:
+                        if cond not in CONDITIONS:
+                            unknown.add(cond)
+                        else:
+                            kind, trig = CONDITIONS[cond]
+                            block.append(f"\t\t{kind} = {{ {trig} }}")
+                else:
+                    block.append(f"\t\tprerequisite = {{ focus = {focus_id(g['id'], i - 1)} }}")
+                block.append("\t\tsearch_filters = { FOCUS_FILTER_POLITICAL }" if b["branch"] in ("politics", "diplomacy", "independence", "start")
+                             else "\t\tsearch_filters = { FOCUS_FILTER_INDUSTRY }" if b["branch"] in ("industry", "terrain", "late")
+                             else "\t\tsearch_filters = { FOCUS_FILTER_RESEARCH }")
+                block.append("\t\tai_will_do = { factor = 1 }")
+                block.append("\t\tcompletion_reward = {")
+                implemented, missing = effect_implementation(f["effect"])
+                if missing and implemented:
+                    partial_implementation += 1
+                elif missing:
+                    tooltip_only += 1
+                else:
+                    fully_implemented += 1
+                tt = tooltip(f["effect"])
+                if tt:
+                    block.append(f"\t\t\tcustom_effect_tooltip = {fid}_tt")
+                block += [f"\t\t\t{r}".replace("{FID}", fid) for r in rewards(f["effect"])]
+                block += ["\t\t}", "\t}"]
+                lines += block
+
+                name = f["name"].replace('"', "'")
+                loc.append(f' {fid}:0 "{name}"')
+                loc.append(f' {fid}_desc:0 "{b["title"]} · {g["title"]}"')
+                if tt:
+                    loc.append(f' {fid}_tt:0 "{tt}"')
+        x_offset += int(cols * 2) + 4
+
+    lines.append("}")
+    if unknown:
+        raise SystemExit(f"CONDITIONS 에 없는 조건 문구: {sorted(unknown)}")
+
+    loc.append(f' {FACTION}:0 "지역 협약"')
+    for name, title, _ in SPIRITS.values():
+        loc.append(f' {name}:0 "{title}"')
+        loc.append(f' {name}_desc:0 "기본 중점에서 쌓은 {title}의 누적 효과."')
+    for _, (character, name, _, _) in ADVISORS.items():
+        loc.append(f' {character}:0 "{name}"')
+    dyn = MOD / "common" / "dynamic_modifiers" / "gibon_jungjeom_modifiers.txt"
+    dyn.parent.mkdir(parents=True, exist_ok=True)
+    dyn.write_text(dynamic_modifier_file(), encoding="utf-8")
+
+    characters = MOD / "common" / "characters" / "gibon_jungjeom_characters.txt"
+    characters.parent.mkdir(parents=True, exist_ok=True)
+    characters.write_text(characters_file(), encoding="utf-8")
+
+    out = MOD / "common" / "national_focus" / "generic.txt"
+    out.parent.mkdir(parents=True, exist_ok=True)
+    out.write_text("\n".join(lines) + "\n", encoding="utf-8")
+    english_path = None
+    for language in LOCALISATION_LANGUAGES:
+        loc_path = MOD / "localisation" / language / f"gibon_jungjeom_l_{language}.yml"
+        loc_path.parent.mkdir(parents=True, exist_ok=True)
+        language_loc = [f"\ufeffl_{language}:", *loc[1:]]
+        loc_path.write_text("\n".join(language_loc) + "\n", encoding="utf-8")
+        if language == "english":
+            english_path = loc_path
+    focuses = sum(len(g["focuses"]) for b in branches for g in b["groups"])
+    print(f"{out.relative_to(MOD.parent.parent)}  포커스 {focuses}개")
+    print(f"효과 구현 검사: 완전 {fully_implemented}칸 / 일부 미구현 {partial_implementation}칸 / 미구현 {tooltip_only}칸")
+    print(f"{english_path.relative_to(MOD.parent.parent)} + {len(LOCALISATION_LANGUAGES) - 1}개 언어  키 {len(loc) - 1}개씩")
+
+
+if __name__ == "__main__":
+    build()
