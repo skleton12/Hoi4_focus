@@ -1,9 +1,21 @@
-# 작업 보고서 — 기본 중점 변경 모드 0.4.4
+# 작업 보고서 — 기본 중점 변경 모드 0.4.6
 
 - 작성: Claude, 2026-10-12 23:30 (KST)
 - 저장소: `skleton12/Hoi4_focus` · 브랜치: `main` (0.4.4 까지는 `skleton12/hoi4_-` 의 `claude/brave-bardeen-n1yqiz`)
 - 대상 게임: HOI4 1.19.3.0.c01a (5632)
 
+
+## 0-15. 0.4.6 설치 경로 맞춤 (2026-10-17 KST)
+
+- 0.4.5 는 PR #1(동적 수정자 즉시 갱신, 수치 효과 7종 연결, `HOI4_EFFECT_FIX_REPORT.md`) 이다.
+- 사용자 PC 에는 이 모드가 `Documents\Paradox Interactive\Hearts of Iron IV\mod\new_focus` 로 깔려 있다.
+  설치 파일이 `gibon_jungjeom` 새 폴더에 깔면 같은 모드가 두 벌이 되므로,
+  `mod\new_focus.mod` 가 있으면 **`new_focus` 폴더를 그대로 갱신**하도록 바꿨다(zip 의 `install.bat`, `tools/Install-Mod.ps1` 둘 다).
+  - 기존 `.mod` 의 `name` 을 그대로 써서 런처가 같은 모드로 알아보고 플레이세트가 유지된다.
+  - `path` 는 `mod/new_focus`, 버전은 새 것으로 쓴다. 폴더 안 옛 파일은 지우고 새로 복사한다.
+  - `Install-Mod.ps1 -InstallAs <폴더>` 로 직접 고를 수도 있다.
+- 리눅스용 PowerShell 7.4 로 가짜 문서 폴더에서 두 경우(new_focus 있음 / 없음)를 시험했다. Windows PowerShell 5.1 에서는 아직 안 돌려 봤다.
+- 모드 내용은 0.4.5 와 같다(버전 표기만 0.4.6).
 
 ## 0-14. 저장소 이전 (2026-10-17 KST)
 

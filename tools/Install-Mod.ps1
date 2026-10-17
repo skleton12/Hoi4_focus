@@ -1,4 +1,4 @@
-<#
+﻿<#
     모드 설치 스크립트
 
     저장소의 mod\<모드> 를 HOI4 모드 폴더로 통째로 복사한다(덮어쓰기). 기본값은 기본 중점 변경 모드(gibon_jungjeom).
@@ -13,6 +13,10 @@
     기본 중점 변경 모드를 설치하려면:
         powershell -ExecutionPolicy Bypass -File .\tools\Install-Mod.ps1 -ModName gibon_jungjeom -Enable
 
+    이미 다른 폴더 이름(예: new_focus)으로 깔려 있으면 그 폴더를 그대로 갱신한다.
+    mod\new_focus.mod 가 있으면 자동으로 new_focus 에 설치하고, 직접 고르려면:
+        powershell -ExecutionPolicy Bypass -File .\tools\Install-Mod.ps1 -InstallAs new_focus
+
     한글 이름의 예전 모드를 같이 지우려면:
         powershell -ExecutionPolicy Bypass -File .\tools\Install-Mod.ps1 -RemoveOld "대균열"
 #>
@@ -22,7 +26,8 @@ param(
     [string]$Source,
     [switch]$Enable,
     [string]$RemoveOld,
-    [switch]$NoMarker
+    [switch]$NoMarker,
+    [string]$InstallAs
 )
 
 $ErrorActionPreference = "Stop"
@@ -107,7 +112,16 @@ if ($ModFolderName -eq 'gibon_jungjeom') {
 # --- 복사 --------------------------------------------------------------------
 $modRoot = Join-Path $userDir 'mod'
 if (-not (Test-Path -LiteralPath $modRoot)) { New-Item -ItemType Directory -Path $modRoot -Force | Out-Null }
-$target = Join-Path $modRoot $ModFolderName
+# 설치 폴더 이름. 사용자 PC 에는 기본 중점 모드가 new_focus 로 깔려 있어 그 폴더를 갱신한다(플레이세트 유지).
+if (-not $InstallAs) {
+    if ($ModFolderName -eq 'gibon_jungjeom' -and (Test-Path -LiteralPath (Join-Path $modRoot 'new_focus.mod'))) {
+        $InstallAs = 'new_focus'
+    } else {
+        $InstallAs = $ModFolderName
+    }
+}
+if ($InstallAs -ne $ModFolderName) { Info "설치 폴더: mod\$InstallAs (기존 설치를 갱신)" }
+$target = Join-Path $modRoot $InstallAs
 
 if (Test-Path -LiteralPath $target) {
     Info "기존 폴더 삭제: $target"
@@ -133,7 +147,16 @@ $utf8NoBom = New-Object System.Text.UTF8Encoding($false)
 $modText = [System.IO.File]::ReadAllText($SourceModFile, [System.Text.Encoding]::UTF8)
 if ($supported) { $modText = [regex]::Replace($modText, '(?m)^\s*supported_version\s*=\s*"[^"]*"', "supported_version=`"$supported`"") }
 
-$outerPath = Join-Path $modRoot "$ModFolderName.mod"
+$outerPath = Join-Path $modRoot "$InstallAs.mod"
+$modText = [regex]::Replace($modText, '(?m)^\s*path\s*=\s*"[^"]*"', "path=`"mod/$InstallAs`"")
+# 이미 깔린 .mod 가 있으면 그 name 을 그대로 쓴다(런처가 같은 모드로 알아보고 플레이세트가 유지된다)
+if (Test-Path -LiteralPath $outerPath) {
+    $oldName = [regex]::Match([System.IO.File]::ReadAllText($outerPath, [System.Text.Encoding]::UTF8), '(?m)^\s*name\s*=\s*"([^"]*)"')
+    if ($oldName.Success) {
+        $modText = [regex]::Replace($modText, '(?m)^\s*name\s*=\s*"[^"]*"', "name=`"$($oldName.Groups[1].Value)`"")
+        Info "기존 이름 유지: $($oldName.Groups[1].Value)"
+    }
+}
 [System.IO.File]::WriteAllText($outerPath, $modText, $utf8NoBom)
 Ok "작성: $outerPath"
 
@@ -164,7 +187,7 @@ if ($RemoveOld) {
 
 # --- 플레이세트 등록 ---------------------------------------------------------
 $dlc = Join-Path $userDir 'dlc_load.json'
-$entry = "mod/$ModFolderName.mod"
+$entry = "mod/$InstallAs.mod"
 if (Test-Path -LiteralPath $dlc) {
     $json = Get-Content -LiteralPath $dlc -Raw -Encoding UTF8 | ConvertFrom-Json
     $mods = @($json.enabled_mods)
@@ -190,7 +213,7 @@ Ok "설치 완료."
 Write-Host ""
 Write-Host "  다음 순서로 확인할 것:"
 Write-Host "   1) logs\error.log 를 삭제"
-Write-Host "   2) 런처 플레이세트에서 '$ModFolderName' 모드를 활성화 -> [플레이]"
+Write-Host "   2) 런처 플레이세트에서 '$InstallAs' 모드를 활성화 -> [플레이]"
 if ($ModFolderName -eq 'daegyunyeol') {
     Write-Host "   3) 1936 새 게임, 일본 선택"
     Write-Host "   4) 디시전 탭 -> '대균열' 카테고리 -> '대균열 발동'"
@@ -198,5 +221,5 @@ if ($ModFolderName -eq 'daegyunyeol') {
 } else {
     Write-Host "   3) 새 게임에서 해당 모드의 중점과 콘텐츠 확인"
 }
-Write-Host "   6) 안 되면  tools\Check-Hoi4Mod.ps1 -ModName $ModFolderName  실행 후 출력 전달"
+Write-Host "   6) 안 되면  tools\Check-Hoi4Mod.ps1 -ModName $InstallAs  실행 후 출력 전달"
 Write-Host ""

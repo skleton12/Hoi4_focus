@@ -2,6 +2,7 @@
 
 | 파일 | 버전 | 대상 게임 |
 |---|---|---|
+| [`gibon_jungjeom_0.4.6.zip`](gibon_jungjeom_0.4.6.zip) | 0.4.6 | HOI4 1.19.3 |
 | [`gibon_jungjeom_0.4.5.zip`](gibon_jungjeom_0.4.5.zip) | 0.4.5 | HOI4 1.19.3 |
 | [`gibon_jungjeom_0.4.4.zip`](gibon_jungjeom_0.4.4.zip) | 0.4.4 | HOI4 1.19.3 |
 
@@ -9,6 +10,7 @@
 
 1. zip 을 내려받아 압축을 푼다.
 2. `install.bat` 을 더블클릭한다.
+   - 이미 `mod\new_focus` 로 깔려 있으면 그 폴더를 그대로 갱신한다(새 폴더를 만들지 않는다).
    - 문서\Paradox Interactive\Hearts of Iron IV\mod 에 모드를 복사한다.
    - 같은 이름의 다른 `.mod` 파일이 있으면 지우지 않고 `mod\_gj_backup` 으로 옮긴다(이름이 겹치면 모드가 안 켜진다).
 3. 런처에서 「기본 중점 변경 모드」를 켜고 실행한다.
