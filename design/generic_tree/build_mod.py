@@ -7,7 +7,8 @@
   localisation/english/gibon_jungjeom_l_english.yml  포커스 이름·설명·효과 안내 (UTF-8 BOM)
 
 시험판이다. 효과 요약 중 확실히 옮길 수 있는 것(정치력, 공장, 안정도, 전쟁 지원, 경험치, 연구 슬롯,
-정부 교체)만 실제 효과로 바꾸고, 나머지는 설계 문구를 효과 안내(custom_effect_tooltip)로 보여 준다.
+정부 교체 등)를 실제 효과로 바꾼다. 누적 보정치는 동적 수정자와 색상 툴팁으로,
+미구현 효과는 (준비 중) 안내로 구분한다.
 """
 import json
 import re
@@ -84,6 +85,13 @@ def fnum(text, pattern):
 # 퍼센트형 효과는 국가 정신 수백 개 대신 동적 수정자 셋(산업·군사·국정 개혁)에 변수로 쌓는다.
 # (효과 문구 패턴, 수정자 이름, 값 배율, 정신)
 MODIFIERS = [
+    (r"사단 증원 속도 ([+-]\d+)%", "land_reinforce_rate", 0.01, "mil"),
+    (r"사단 이동 속도 ([+-]\d+)%", "army_speed_factor", 0.01, "mil"),
+    (r"사단 경험 획득 ([+-]\d+)%", "experience_gain_army_unit_factor", 0.01, "mil"),
+    (r"사단 훈련 시간 ([+-]\d+)%", "training_time_army_factor", 0.01, "mil"),
+    (r"근접 지원 효율 ([+-]\d+)%", "air_cas_efficiency", 0.01, "mil"),
+    (r"특수부대 대대 한도 ([+-]\d+)", "special_forces_cap_flat", 1, "mil"),
+    (r"의용군 파견 한도 ([+-]\d+)", "send_volunteer_size", 1, "mil"),
     (r"징집 인력 \+(\d+)%", "conscription", 0.01, "mil"),
     (r"일일 정치력 ([+-][\d.]+)", "political_power_gain", 1, "state"),
     (r"정치력 획득 \+(\d+)%", "political_power_factor", 0.01, "state"),
@@ -263,19 +271,31 @@ def rewards(effect):
 
     adds, spirits = [], []
     for pattern, modifier, scale, spirit in MODIFIERS:
-        v = fnum(effect, pattern)
-        if v:
-            adds.append(f"add_to_variable = {{ var = GJ_{modifier} value = {v * scale:g} }}")
+        for match in re.finditer(pattern, effect):
+            value = float(match.group(1)) * scale
+            if not value:
+                continue
+            adds.append(f"add_to_variable = {{ var = GJ_{modifier} value = {value:g} }}")
             if spirit not in spirits:
                 spirits.append(spirit)
     hidden = []
+    for spirit in spirits:
+        # A dynamic modifier reads every referenced variable when first added.
+        # Initialize unused fields without erasing accumulated bonuses.
+        modifiers = dict.fromkeys(modifier for _, modifier, _, owner in MODIFIERS if owner == spirit)
+        for modifier in modifiers:
+            variable = f"GJ_{modifier}"
+            hidden.append(f"if = {{ limit = {{ NOT = {{ has_variable = {variable} }} }} "
+                          f"set_variable = {{ var = {variable} value = 0 }} }}")
+    hidden.extend(adds)
     for spirit in spirits:
         name = SPIRITS[spirit][0]
         hidden.append(f"if = {{ limit = {{ NOT = {{ has_dynamic_modifier = {{ modifier = {name} }} }} }} "
                       f"add_dynamic_modifier = {{ modifier = {name} }} }}")
     if adds:
-        # 변수 조작은 툴팁에 날것(흰 글씨)으로 보이므로 숨기고, tooltip() 이 색을 입혀 따로 보여 준다
-        out.append("hidden_effect = { " + " ".join(hidden + adds) + " }")
+        # Re-evaluate existing spirits now, rather than waiting for the daily tick.
+        hidden.append("force_update_dynamic_modifier = yes")
+        out.append("hidden_effect = { " + " ".join(hidden) + " }")
     return out
 
 

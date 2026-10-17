@@ -4,7 +4,7 @@ Hearts of Iron IV 의 **기본(제네릭) 국가 중점 트리**를 새로 짠 �
 (한국 계열 소국, 알바니아, 중남미 국가 등)가 이 트리를 받는다.
 
 - 대상 게임: HOI4 1.19.3 (1.19.3.0.c01a)
-- 현재 버전: 0.4.4 · 1035칸 (산업 151 · 군사 111 · 정치 606 · 외교 78 · 괴뢰국/종주국/독립 89)
+- 현재 버전: 0.4.5 · 1035칸 (산업 151 · 군사 111 · 정치 606 · 외교 78 · 괴뢰국/종주국/독립 89)
 - 런처 이름: 「기본 중점 변경 모드」
 
 ## 내려받아 설치하기
@@ -37,6 +37,7 @@ Hearts of Iron IV 의 **기본(제네릭) 국가 중점 트리**를 새로 짠 �
 python3 design/generic_tree/check.py        # 설계 검사 (오류 0)
 python3 design/generic_tree/build_mod.py    # mod/gibon_jungjeom 다시 생성
 python3 tools/validate.py                   # 모드 검사 (오류 0)
+python3 tools/test_focus_effects.py          # 효과 생성 회귀 검사
 python3 design/generic_tree/render.py       # 그림 갱신 (Pillow 필요)
 # 2. 배포할 때: descriptor 두 곳의 version 올리고
 python3 tools/make_release.py               # releases/gibon_jungjeom_<버전>.zip
