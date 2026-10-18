@@ -62,6 +62,7 @@ CONDITIONS = {
 # 집권 경로 조건은 해당 경로의 마지막 칸을 끝냈는지로 본다
 WAR_ROUTES = ("com_war", "dem_war", "fas_war", "neu_war")
 # 합법 집권의 마지막 칸(정부 교체)은 그 이념 지지율 30% 이상일 때만. 모자라면 내전·쿠데타 길로.
+WAR_IDEOLOGY = {"com_war": "communism", "dem_war": "democratic", "fas_war": "fascism"}
 LEGAL_ROUTES = {"com_legal": "communism", "dem_legal": "democratic", "fas_legal": "fascism", "neu_legal": "neutrality"}
 ROUTE_CONDITIONS = {"무장 봉기로 집권": "com_war", "군부 쿠데타로 집권": "neu_war"}
 
@@ -285,11 +286,16 @@ def rewards(effect):
         size = 0.3 if m.group(2) else 0.5
         elections = "yes" if target == "democratic" else "no"
         olds = [i for i in IDEOLOGY.values() if i != target]
-        body = " ".join(f"if = {{ limit = {{ has_government = {o} }} set_country_flag = GJ_cw_{o} }}" for o in olds)
-        body += f" set_politics = {{ ruling_party = {target} elections_allowed = {elections} }}"
-        body += " " + " ".join(f"if = {{ limit = {{ has_country_flag = GJ_cw_{o} }} clr_country_flag = GJ_cw_{o} "
-                               f"start_civil_war = {{ ideology = {o} size = {size} }} }}" for o in olds)
-        out.append(f"if = {{ limit = {{ NOT = {{ has_government = {target} }} }} {body} }}")
+        # 지금 정부를 보고 바로 갈라진다(툴팁이 찍기 전에 계산되므로, 깃발을 쓰면 내전 줄이 안 보인다)
+        tt = "GJ_coup_tt" if m.group(2) else "GJ_civil_war_tt"
+        branches = []
+        for k, o in enumerate(olds):
+            kw = "if" if k == 0 else "else_if"
+            branches.append(f"{kw} = {{ limit = {{ has_government = {o} }} "
+                            f"set_politics = {{ ruling_party = {target} elections_allowed = {elections} }} "
+                            f"start_civil_war = {{ ideology = {o} size = {size} }} }}")
+        out.append(f"custom_effect_tooltip = {tt}")
+        out += branches
     m = re.search(r"정부를 (공산주의|민주주의|파시즘|비동맹)(?:으)?로 교체", effect)
     if m:
         elections = "yes" if m.group(1) == "민주주의" else "no"
@@ -591,6 +597,9 @@ def build():
                     block.append(f"\t\tprerequisite = {{ focus = {focus_id(g['id'], i - 1)} }}")
                     if g["id"] in LEGAL_ROUTES and i == len(g["focuses"]):
                         block.append(f"\t\tavailable = {{ {LEGAL_ROUTES[g['id']]} > 0.3 }}")
+                    if g["id"] in WAR_ROUTES and i == 2 and g["id"] in WAR_IDEOLOGY:
+                        # 봉기·쿠데타 칸: 그 이념 지지가 어느 정도 있어야 일으킬 수 있다
+                        block.append(f"\t\tavailable = {{ {WAR_IDEOLOGY[g['id']]} > 0.15 }}")
                     if g["id"] in WAR_ROUTES and i == len(g["focuses"]):
                         # 내전 승리 칸: 내전이 끝난 뒤에만
                         block.append("\t\tavailable = { has_civil_war = no }")
@@ -643,6 +652,8 @@ def build():
         raise SystemExit(f"CONDITIONS 에 없는 조건 문구: {sorted(unknown)}")
 
     loc.append(f' {FACTION}:0 "지역 협약"')
+    loc.append(' GJ_civil_war_tt:0 "§R내전 발발!§! 정부가 새 이념으로 바뀌고, 옛 정권이 나라의 절반을 들고 반란군으로 떨어져 나갑니다. 플레이어는 새 정부를 이끕니다."')
+    loc.append(' GJ_coup_tt:0 "§R군부 쿠데타!§! 군부가 정권을 잡고, 옛 정권 지지 세력이 나라의 일부를 들고 반란을 일으킵니다."')
     for name, title, _ in SPIRITS.values():
         loc.append(f' {name}:0 "{title}"')
         loc.append(f' {name}_desc:0 "기본 중점에서 쌓은 {title}의 누적 효과."')

@@ -3940,11 +3940,15 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_com_war_1 }
+		available = { communism > 0.15 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_manpower = 5000
-			if = { limit = { NOT = { has_government = communism } } if = { limit = { has_government = democratic } set_country_flag = GJ_cw_democratic } if = { limit = { has_government = fascism } set_country_flag = GJ_cw_fascism } if = { limit = { has_government = neutrality } set_country_flag = GJ_cw_neutrality } set_politics = { ruling_party = communism elections_allowed = no } if = { limit = { has_country_flag = GJ_cw_democratic } clr_country_flag = GJ_cw_democratic start_civil_war = { ideology = democratic size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_fascism } clr_country_flag = GJ_cw_fascism start_civil_war = { ideology = fascism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_neutrality } clr_country_flag = GJ_cw_neutrality start_civil_war = { ideology = neutrality size = 0.5 } } }
+			custom_effect_tooltip = GJ_civil_war_tt
+			if = { limit = { has_government = democratic } set_politics = { ruling_party = communism elections_allowed = no } start_civil_war = { ideology = democratic size = 0.5 } }
+			else_if = { limit = { has_government = fascism } set_politics = { ruling_party = communism elections_allowed = no } start_civil_war = { ideology = fascism size = 0.5 } }
+			else_if = { limit = { has_government = neutrality } set_politics = { ruling_party = communism elections_allowed = no } start_civil_war = { ideology = neutrality size = 0.5 } }
 		}
 	}
 	focus = {
@@ -6300,11 +6304,15 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_dem_war_1 }
+		available = { democratic > 0.15 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_manpower = 5000
-			if = { limit = { NOT = { has_government = democratic } } if = { limit = { has_government = communism } set_country_flag = GJ_cw_communism } if = { limit = { has_government = fascism } set_country_flag = GJ_cw_fascism } if = { limit = { has_government = neutrality } set_country_flag = GJ_cw_neutrality } set_politics = { ruling_party = democratic elections_allowed = yes } if = { limit = { has_country_flag = GJ_cw_communism } clr_country_flag = GJ_cw_communism start_civil_war = { ideology = communism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_fascism } clr_country_flag = GJ_cw_fascism start_civil_war = { ideology = fascism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_neutrality } clr_country_flag = GJ_cw_neutrality start_civil_war = { ideology = neutrality size = 0.5 } } }
+			custom_effect_tooltip = GJ_civil_war_tt
+			if = { limit = { has_government = communism } set_politics = { ruling_party = democratic elections_allowed = yes } start_civil_war = { ideology = communism size = 0.5 } }
+			else_if = { limit = { has_government = fascism } set_politics = { ruling_party = democratic elections_allowed = yes } start_civil_war = { ideology = fascism size = 0.5 } }
+			else_if = { limit = { has_government = neutrality } set_politics = { ruling_party = democratic elections_allowed = yes } start_civil_war = { ideology = neutrality size = 0.5 } }
 		}
 	}
 	focus = {
@@ -8226,11 +8234,15 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_fas_war_1 }
+		available = { fascism > 0.15 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_manpower = 5000
-			if = { limit = { NOT = { has_government = fascism } } if = { limit = { has_government = communism } set_country_flag = GJ_cw_communism } if = { limit = { has_government = democratic } set_country_flag = GJ_cw_democratic } if = { limit = { has_government = neutrality } set_country_flag = GJ_cw_neutrality } set_politics = { ruling_party = fascism elections_allowed = no } if = { limit = { has_country_flag = GJ_cw_communism } clr_country_flag = GJ_cw_communism start_civil_war = { ideology = communism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_democratic } clr_country_flag = GJ_cw_democratic start_civil_war = { ideology = democratic size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_neutrality } clr_country_flag = GJ_cw_neutrality start_civil_war = { ideology = neutrality size = 0.5 } } }
+			custom_effect_tooltip = GJ_civil_war_tt
+			if = { limit = { has_government = communism } set_politics = { ruling_party = fascism elections_allowed = no } start_civil_war = { ideology = communism size = 0.5 } }
+			else_if = { limit = { has_government = democratic } set_politics = { ruling_party = fascism elections_allowed = no } start_civil_war = { ideology = democratic size = 0.5 } }
+			else_if = { limit = { has_government = neutrality } set_politics = { ruling_party = fascism elections_allowed = no } start_civil_war = { ideology = neutrality size = 0.5 } }
 		}
 	}
 	focus = {
@@ -10157,7 +10169,10 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_political_power = 150
-			if = { limit = { NOT = { has_government = neutrality } } if = { limit = { has_government = communism } set_country_flag = GJ_cw_communism } if = { limit = { has_government = democratic } set_country_flag = GJ_cw_democratic } if = { limit = { has_government = fascism } set_country_flag = GJ_cw_fascism } set_politics = { ruling_party = neutrality elections_allowed = no } if = { limit = { has_country_flag = GJ_cw_communism } clr_country_flag = GJ_cw_communism start_civil_war = { ideology = communism size = 0.3 } } if = { limit = { has_country_flag = GJ_cw_democratic } clr_country_flag = GJ_cw_democratic start_civil_war = { ideology = democratic size = 0.3 } } if = { limit = { has_country_flag = GJ_cw_fascism } clr_country_flag = GJ_cw_fascism start_civil_war = { ideology = fascism size = 0.3 } } }
+			custom_effect_tooltip = GJ_coup_tt
+			if = { limit = { has_government = communism } set_politics = { ruling_party = neutrality elections_allowed = no } start_civil_war = { ideology = communism size = 0.3 } }
+			else_if = { limit = { has_government = democratic } set_politics = { ruling_party = neutrality elections_allowed = no } start_civil_war = { ideology = democratic size = 0.3 } }
+			else_if = { limit = { has_government = fascism } set_politics = { ruling_party = neutrality elections_allowed = no } start_civil_war = { ideology = fascism size = 0.3 } }
 		}
 	}
 	focus = {
