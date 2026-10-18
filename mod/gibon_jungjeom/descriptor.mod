@@ -1,8 +1,8 @@
-version="0.5.0"
+version="0.5.1"
 tags={
 	"National Focuses"
 	"Gameplay"
 	"Balance"
 }
-name="기본 중점 변경 모드"
+name="기본 중점 개편"
 supported_version="1.19.3.*"
