@@ -231,6 +231,14 @@ def rewards(effect):
     for who, tag in (("연합국", "ENG"), ("소련", "SOV")):
         if f"{who} 보장 획득" in effect:
             out.append(f"if = {{ limit = {{ country_exists = {tag} }} {tag} = {{ give_guarantee = ROOT }} }}")
+    if "이웃국 영유권 주장" in effect:
+        # 이웃 나라의 수도가 아닌 주 하나에 영유권
+        out.append("random_neighbor_country = { limit = { NOT = { is_subject_of = ROOT } } "
+                   "random_owned_state = { limit = { is_capital = no } add_claim_by = ROOT } }")
+    if "종주국 보장 획득" in effect:
+        out.append("if = { limit = { is_subject = yes } OVERLORD = { give_guarantee = ROOT } }")
+    if "평화적 독립" in effect:
+        out.append("if = { limit = { is_subject = yes } OVERLORD = { end_puppet = ROOT } }")
     if "자체 진영 생성" in effect:
         out.append(f"if = {{ limit = {{ is_in_faction = no }} create_faction = {FACTION} }}")
     if "정보 기관 설립" in effect:
@@ -390,6 +398,31 @@ def focus_id(gid, i):
     return f"{PREFIX}_{gid}_{i}"
 
 
+def split_spirit(effect):
+    """% 효과(MODIFIERS) 조각을 떼어 국가 정신 수정자로 돌려준다. (수정자 dict, 나머지 효과 문구)"""
+    mods, rest = {}, []
+    for part in re.split(r",\s*", effect):
+        hit = False
+        for pattern, modifier, scale, _ in MODIFIERS:
+            v = fnum(part, pattern)
+            if v:
+                mods[modifier] = round(mods.get(modifier, 0) + v * scale, 4)
+                hit = True
+        if not hit and part:
+            rest.append(part)
+    return mods, ", ".join(rest)
+
+
+def ideas_file(ideas):
+    text = ["# build_mod.py 가 만든 파일이다. 70일 중점을 끝내면 받는 이름 있는 국가 정신.", "ideas = {", "\tcountry = {"]
+    for iid, mods in ideas:
+        text += [f"\t\t{iid} = {{", "\t\t\tallowed = { always = no }", "\t\t\tremoval_cost = -1", "\t\t\tmodifier = {"]
+        text += [f"\t\t\t\t{k} = {v:g}" for k, v in mods.items()]
+        text += ["\t\t\t}", "\t\t}"]
+    text += ["\t}", "}"]
+    return "\n".join(text) + "\n"
+
+
 def mod_version():
     m = re.search(r'version="([^"]+)"', (MOD.parent / "gibon_jungjeom.mod").read_text(encoding="utf-8"))
     return m.group(1) if m else "?"
@@ -421,6 +454,7 @@ def build():
                 route_last[g["id"]] = focus_id(g["id"], len(g["focuses"]))
 
     unknown = set()
+    ideas = []
     fully_implemented = partial_implementation = tooltip_only = 0
     for b in branches:
         groups = b["groups"]
@@ -473,10 +507,21 @@ def build():
                     tooltip_only += 1
                 else:
                     fully_implemented += 1
-                tt = tooltip(f["effect"])
+                effect = f["effect"]
+                spirit_mods = {}
+                if f["days"] == 70:
+                    # 굵직한 칸: % 효과를 이름 있는 국가 정신으로 준다(게임이 툴팁에 수정자를 직접 보여 준다)
+                    spirit_mods, effect = split_spirit(effect)
+                tt = tooltip(effect) if effect else ""
                 if tt:
                     block.append(f"\t\t\tcustom_effect_tooltip = {fid}_tt")
-                block += [f"\t\t\t{r}".replace("{FID}", fid) for r in rewards(f["effect"])]
+                if spirit_mods:
+                    iid = f"GJ_idea_{g['id']}_{i}"
+                    ideas.append((iid, spirit_mods))
+                    block.append(f"\t\t\tadd_ideas = {iid}")
+                    loc.append(f' {iid}:0 "{f["name"]}"')
+                    loc.append(f' {iid}_desc:0 "{b["title"]} · {g["title"]} 중점으로 얻은 국가 정신."')
+                block += [f"\t\t\t{r}".replace("{FID}", fid) for r in (rewards(effect) if effect else [])]
                 block += ["\t\t}", "\t}"]
                 lines += block
 
@@ -501,6 +546,11 @@ def build():
     dyn = MOD / "common" / "dynamic_modifiers" / "gibon_jungjeom_modifiers.txt"
     dyn.parent.mkdir(parents=True, exist_ok=True)
     dyn.write_text(dynamic_modifier_file(), encoding="utf-8")
+
+    ideas_path = MOD / "common" / "ideas" / "gibon_jungjeom_ideas.txt"
+    ideas_path.parent.mkdir(parents=True, exist_ok=True)
+    ideas_path.write_text(ideas_file(ideas), encoding="utf-8")
+    print(f"국가 정신 {len(ideas)}개")
 
     characters = MOD / "common" / "characters" / "gibon_jungjeom_characters.txt"
     characters.parent.mkdir(parents=True, exist_ok=True)
