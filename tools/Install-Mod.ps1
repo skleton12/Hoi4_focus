@@ -163,10 +163,24 @@ Ok "작성: $outerPath"
 # 같은 name 을 쓰는 다른 .mod 가 있으면 경고한다. 위키: 이름이 같으면 먼저 읽힌 쪽(파일 이름 순)만 쓰인다.
 # 예전 설치·수동 복사가 남긴 .mod 가 폴더 없이 남아 있으면 새 모드를 가린다.
 $myName = [regex]::Match($modText, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value
+$backupRoot = Join-Path $modRoot '_gj_backup'
 foreach ($other in Get-ChildItem -LiteralPath $modRoot -Filter '*.mod' -File) {
     if ($other.FullName -eq $outerPath) { continue }
     $otherText = [System.IO.File]::ReadAllText($other.FullName, [System.Text.Encoding]::UTF8)
-    if ([regex]::Match($otherText, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value -eq $myName) {
+    # 이 모드의 예전 설치본(다른 폴더 이름)은 백업으로 옮긴다. 같이 켜져 있으면 예전 문구가 새 문구를 덮는다.
+    $otherPath = [regex]::Match($otherText, '(?m)^\s*path\s*=\s*"([^"]*)"').Groups[1].Value
+    $otherDir = if ($otherPath) { Join-Path $userDir ($otherPath -replace '/', '\') } else { $null }
+    $isOurs = ($ModFolderName -eq 'gibon_jungjeom') -and $otherDir -and (Test-Path -LiteralPath $otherDir) -and
+              ((Get-Item -LiteralPath $otherDir).FullName -ne (Get-Item -LiteralPath $target).FullName) -and
+              @(Get-ChildItem -LiteralPath $otherDir -Recurse -Filter 'gibon_jungjeom_l_*.yml' -ErrorAction SilentlyContinue).Count -gt 0
+    if ($isOurs) {
+        New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
+        Move-Item -LiteralPath $other.FullName -Destination (Join-Path $backupRoot $other.Name) -Force
+        $dest = Join-Path $backupRoot (Split-Path -Leaf $otherDir)
+        if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Recurse -Force }
+        Move-Item -LiteralPath $otherDir -Destination $dest -Force
+        Warn "예전 설치본을 _gj_backup 으로 옮겼다: $($other.Name)"
+    } elseif ([regex]::Match($otherText, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value -eq $myName) {
         Warn "같은 이름(name=`"$myName`")의 다른 디스크립터가 있다: $($other.Name). 이 모드를 가릴 수 있으니 옮기거나 지울 것."
     }
 }

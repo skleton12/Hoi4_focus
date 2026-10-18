@@ -390,7 +390,13 @@ def focus_id(gid, i):
     return f"{PREFIX}_{gid}_{i}"
 
 
+def mod_version():
+    m = re.search(r'version="([^"]+)"', (MOD.parent / "gibon_jungjeom.mod").read_text(encoding="utf-8"))
+    return m.group(1) if m else "?"
+
+
 def build():
+    version = mod_version()
     branches = [json.loads(p.read_text(encoding="utf-8")) for p in sorted(DATA.glob("*.json"))]
     lines = [
         "# 「기본 중점 변경 모드」 — design/generic_tree/build_mod.py 가 만든 파일이다. 직접 고치지 말 것.",
@@ -476,7 +482,8 @@ def build():
 
                 name = f["name"].replace('"', "'")
                 loc.append(f' {fid}:0 "{name}"')
-                loc.append(f' {fid}_desc:0 "{b["title"]} · {g["title"]}"')
+                # 설명 끝에 버전을 붙여, 게임에서 어느 설치본을 읽는지 바로 알 수 있게 한다
+                loc.append(f' {fid}_desc:0 "{b["title"]} · {g["title"]}  §g(v{version})§!"')
                 if tt:
                     loc.append(f' {fid}_tt:0 "{tt}"')
         x_offset += int(cols * 2) + 4
