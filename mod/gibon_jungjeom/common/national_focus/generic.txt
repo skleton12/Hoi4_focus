@@ -501,13 +501,14 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			capital_scope = { add_building_construction = { type = infrastructure level = 1 instant_build = yes } }
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 			random_owned_controlled_state = { add_resource = { type = oil amount = 4 } }
 		}
 	}
 	focus = {
 		id = GJ_ind_res_b_2
-		icon = GFX_goal_generic_construct_civ_factory
+		icon = GFX_goal_generic_oil_refinery
 		x = 18
 		y = 3
 		cost = 5
@@ -515,13 +516,14 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_political_power = 50
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 			random_owned_controlled_state = { add_resource = { type = rubber amount = 4 } }
 		}
 	}
 	focus = {
 		id = GJ_ind_res_b_3
-		icon = GFX_goal_generic_production
+		icon = GFX_goal_generic_oil_refinery
 		x = 18
 		y = 4
 		cost = 5
@@ -530,7 +532,8 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_ind_res_b_3_tt
-			add_political_power = 50
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_industrial_capacity_factory } } set_variable = { var = GJ_industrial_capacity_factory value = 0 } } if = { limit = { NOT = { has_variable = GJ_consumer_goods_factor } } set_variable = { var = GJ_consumer_goods_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_research_speed_factor } } set_variable = { var = GJ_research_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_factory_max_efficiency_factor } } set_variable = { var = GJ_production_factory_max_efficiency_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_factory_efficiency_gain_factor } } set_variable = { var = GJ_production_factory_efficiency_gain_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_line_change_production_efficiency_factor } } set_variable = { var = GJ_line_change_production_efficiency_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_industrial_complex_factor } } set_variable = { var = GJ_production_speed_industrial_complex_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_local_resources_factor } } set_variable = { var = GJ_local_resources_factor value = 0 } } add_to_variable = { var = GJ_local_resources_factor value = 0.1 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_industry } } } add_dynamic_modifier = { modifier = GJ_reform_industry } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -544,7 +547,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_political_power = 50
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = fuel_silo level = 1 instant_build = yes } }
 			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 		}
 	}
@@ -944,7 +947,9 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
 			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
 			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
@@ -1149,8 +1154,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			add_offsite_building = { type = arms_factory level = 1 }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -1364,7 +1371,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_INDUSTRY }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 			add_tech_bonus = { name = GJ_ind_sci_b_2 bonus = 0.50 uses = 1 category = synth_resources }
 		}
 	}
@@ -2267,13 +2275,13 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_army_modern_1_tt
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_army_org_factor value = 0.05 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
 	focus = {
 		id = GJ_army_modern_2
-		icon = GFX_goal_generic_small_arms
+		icon = GFX_goal_generic_army_artillery
 		x = 62
 		y = 4
 		cost = 5
@@ -2281,7 +2289,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = artillery_equipment amount = 300 }
 			add_tech_bonus = { name = GJ_army_modern_2 bonus = 0.50 uses = 1 category = infantry_weapons }
 		}
 	}
@@ -2295,7 +2303,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			army_experience = 30
 		}
 	}
@@ -2354,7 +2362,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			army_experience = 15
+			add_equipment_to_stockpile = { type = artillery_equipment amount = 300 }
 			add_tech_bonus = { name = GJ_army_def_a_2 bonus = 0.50 uses = 1 category = artillery }
 		}
 	}
@@ -2413,7 +2421,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_army_def_b_2_tt
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_land_reinforce_rate value = 0.15 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -2487,7 +2495,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_army_exp_a_1_tt
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_conscription value = 0.01 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -2501,7 +2509,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_equipment_to_stockpile = { type = infantry_equipment amount = 500 }
+			add_equipment_to_stockpile = { type = artillery_equipment amount = 300 }
 			add_tech_bonus = { name = GJ_army_exp_a_2 bonus = 0.50 uses = 1 category = artillery }
 		}
 	}
@@ -2515,7 +2523,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_equipment_to_stockpile = { type = infantry_equipment amount = 500 }
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			add_tech_bonus = { name = GJ_army_exp_a_3 bonus = 0.50 uses = 1 category = armor }
 		}
 	}
@@ -2530,7 +2538,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_army_exp_a_4_tt
-			add_manpower = 5000
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_army_speed_factor value = 0.05 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -2642,13 +2650,13 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			add_tech_bonus = { name = GJ_navy_modern_1 bonus = 0.50 uses = 1 category = radar_tech }
 		}
 	}
 	focus = {
 		id = GJ_navy_modern_2
-		icon = GFX_goal_generic_construct_naval_dockyard
+		icon = GFX_goal_generic_navy_doctrines_tactics
 		x = 80
 		y = 4
 		cost = 5
@@ -2656,8 +2664,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			navy_experience = 20
-			add_equipment_to_stockpile = { type = convoy amount = 10 }
 		}
 	}
 	focus = {
@@ -2670,7 +2678,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			navy_experience = 30
 		}
 	}
@@ -2827,7 +2835,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			navy_experience = 20
 		}
 	}
@@ -2854,8 +2862,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 40
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -2884,8 +2894,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 30
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -2899,7 +2911,9 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_air_modern_1_tt
-			air_experience = 15
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_industrial_capacity_factory } } set_variable = { var = GJ_industrial_capacity_factory value = 0 } } if = { limit = { NOT = { has_variable = GJ_consumer_goods_factor } } set_variable = { var = GJ_consumer_goods_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_research_speed_factor } } set_variable = { var = GJ_research_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_factory_max_efficiency_factor } } set_variable = { var = GJ_production_factory_max_efficiency_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_factory_efficiency_gain_factor } } set_variable = { var = GJ_production_factory_efficiency_gain_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_line_change_production_efficiency_factor } } set_variable = { var = GJ_line_change_production_efficiency_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_industrial_complex_factor } } set_variable = { var = GJ_production_speed_industrial_complex_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_local_resources_factor } } set_variable = { var = GJ_local_resources_factor value = 0 } } add_to_variable = { var = GJ_production_factory_efficiency_gain_factor value = 0.05 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_industry } } } add_dynamic_modifier = { modifier = GJ_reform_industry } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -2913,13 +2927,15 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 30
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
 		id = GJ_air_modern_3
-		icon = GFX_goal_generic_secret_weapon
+		icon = GFX_goal_generic_air_fighter
 		x = 92
 		y = 5
 		cost = 10
@@ -2927,7 +2943,9 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 5000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			add_tech_bonus = { name = GJ_air_modern_3 bonus = 0.50 uses = 1 category = jet_engine }
 		}
 	}
@@ -2942,7 +2960,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			air_experience = 20
 		}
 	}
@@ -2956,13 +2974,13 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			air_experience = 15
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			add_tech_bonus = { name = GJ_air_def_2 bonus = 0.50 uses = 1 category = light_fighter }
 		}
 	}
 	focus = {
 		id = GJ_air_def_a_1
-		icon = GFX_goal_generic_army_doctrines
+		icon = GFX_goal_generic_construct_mil_factory
 		x = 94
 		y = 5
 		cost = 5
@@ -2970,8 +2988,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			add_offsite_building = { type = arms_factory level = 1 }
-			army_experience = 15
 		}
 	}
 	focus = {
@@ -2984,7 +3002,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			air_experience = 45
 		}
 	}
@@ -2998,7 +3016,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			air_experience = 20
 		}
 	}
@@ -3012,7 +3030,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = anti_air_building level = 1 instant_build = yes } }
 			air_experience = 20
 		}
 	}
@@ -3042,7 +3060,9 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_air_cas_1_tt
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_air_cas_efficiency value = 0.05 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -3056,7 +3076,9 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			army_experience = 15
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			add_tech_bonus = { name = GJ_air_cas_2 bonus = 0.50 uses = 1 category = cas_bomber }
 		}
 	}
@@ -3085,8 +3107,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 20
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3100,7 +3124,9 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_ideas = GJ_idea_air_cas_a_3
-			air_experience = 15
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3113,8 +3139,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			add_offsite_building = { type = arms_factory level = 1 }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3189,7 +3217,7 @@ focus_tree = {
 	}
 	focus = {
 		id = GJ_army_staff_1
-		icon = GFX_goal_generic_small_arms
+		icon = GFX_goal_generic_army_doctrines
 		x = 78
 		y = 3
 		cost = 5
@@ -3197,8 +3225,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			army_experience = 50
-			add_equipment_to_stockpile = { type = infantry_equipment amount = 500 }
 		}
 	}
 	focus = {
@@ -3211,7 +3239,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			army_experience = 30
 		}
 	}
@@ -3241,7 +3269,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_army_staff_4_tt
-			add_manpower = 5000
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_army_org_factor value = 0.03 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -3339,7 +3367,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			add_equipment_to_stockpile = { type = artillery_equipment amount = 300 }
 			add_tech_bonus = { name = GJ_army_def_c_2 bonus = 0.50 uses = 1 category = artillery }
 		}
 	}
@@ -3455,8 +3483,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			navy_experience = 30
-			add_equipment_to_stockpile = { type = convoy amount = 10 }
 		}
 	}
 	focus = {
@@ -3469,8 +3497,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			add_offsite_building = { type = dockyard level = 1 }
-			add_equipment_to_stockpile = { type = convoy amount = 10 }
 		}
 	}
 	focus = {
@@ -3483,8 +3511,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			add_equipment_to_stockpile = { type = support_equipment amount = 200 }
 			navy_experience = 60
-			add_equipment_to_stockpile = { type = convoy amount = 10 }
 		}
 	}
 	focus = {
@@ -3596,8 +3624,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 45
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3610,8 +3640,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 3000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 20
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3624,8 +3656,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 30
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3638,8 +3672,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 45
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3652,8 +3688,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_war_support = 0.03
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 75
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -3693,6 +3731,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_RESEARCH }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 			random_owned_controlled_state = { add_resource = { type = oil amount = 4 } }
 			random_owned_controlled_state = { add_resource = { type = rubber amount = 4 } }
 		}
@@ -3751,7 +3791,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			custom_effect_tooltip = GJ_late_total_b_2_tt
-			add_manpower = 5000
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = fuel_silo level = 1 instant_build = yes } }
 			hidden_effect = { if = { limit = { NOT = { has_variable = GJ_land_reinforce_rate } } set_variable = { var = GJ_land_reinforce_rate value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_speed_factor } } set_variable = { var = GJ_army_speed_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_experience_gain_army_unit_factor } } set_variable = { var = GJ_experience_gain_army_unit_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_training_time_army_factor } } set_variable = { var = GJ_training_time_army_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_air_cas_efficiency } } set_variable = { var = GJ_air_cas_efficiency value = 0 } } if = { limit = { NOT = { has_variable = GJ_special_forces_cap_flat } } set_variable = { var = GJ_special_forces_cap_flat value = 0 } } if = { limit = { NOT = { has_variable = GJ_send_volunteer_size } } set_variable = { var = GJ_send_volunteer_size value = 0 } } if = { limit = { NOT = { has_variable = GJ_conscription } } set_variable = { var = GJ_conscription value = 0 } } if = { limit = { NOT = { has_variable = GJ_non_core_manpower } } set_variable = { var = GJ_non_core_manpower value = 0 } } if = { limit = { NOT = { has_variable = GJ_monthly_population } } set_variable = { var = GJ_monthly_population value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_bunker_factor } } set_variable = { var = GJ_production_speed_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_production_speed_coastal_bunker_factor } } set_variable = { var = GJ_production_speed_coastal_bunker_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_supply_consumption_factor } } set_variable = { var = GJ_supply_consumption_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_defence_factor } } set_variable = { var = GJ_army_defence_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_army_org_factor } } set_variable = { var = GJ_army_org_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_dig_in_factor } } set_variable = { var = GJ_max_dig_in_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_max_fuel_factor } } set_variable = { var = GJ_max_fuel_factor value = 0 } } if = { limit = { NOT = { has_variable = GJ_surrender_limit } } set_variable = { var = GJ_surrender_limit value = 0 } } add_to_variable = { var = GJ_max_fuel_factor value = 0.2 } if = { limit = { NOT = { has_dynamic_modifier = { modifier = GJ_reform_military } } } add_dynamic_modifier = { modifier = GJ_reform_military } } force_update_dynamic_modifier = yes }
 		}
 	}
@@ -7202,7 +7242,9 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 5000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			add_tech_bonus = { name = GJ_dem_liberal_cap_2 bonus = 0.50 uses = 1 category = light_fighter }
 		}
 	}
@@ -9249,7 +9291,7 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_stability = 0.05
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = fuel_silo level = 1 instant_build = yes } }
 			add_tech_bonus = { name = GJ_fas_natsoc_end_2 bonus = 0.50 uses = 1 category = synth_resources }
 		}
 	}
@@ -9299,7 +9341,7 @@ focus_tree = {
 	}
 	focus = {
 		id = GJ_fas_natsoc_a2_1
-		icon = GFX_goal_generic_army_tanks
+		icon = GFX_goal_generic_air_fighter
 		x = 200
 		y = 14
 		cost = 5
@@ -9307,7 +9349,9 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 5000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			add_tech_bonus = { name = GJ_fas_natsoc_a2_1 bonus = 0.50 uses = 1 category = armor }
 		}
 	}
@@ -9321,7 +9365,9 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_stability = 0.05
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 			add_tech_bonus = { name = GJ_fas_natsoc_a2_2 bonus = 0.50 uses = 1 category = cas_bomber }
 		}
 	}
@@ -9335,8 +9381,10 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_manpower = 5000
+			capital_scope = { add_building_construction = { type = air_base level = 1 instant_build = yes } }
 			air_experience = 30
+			random_owned_controlled_state = { limit = { NOT = { has_state_flag = GJ_temp_air_base_target } air_base < 5 } add_building_construction = { type = air_base level = 1 instant_build = yes } set_state_flag = GJ_temp_air_base_target }
+			every_owned_state = { clr_state_flag = GJ_temp_air_base_target }
 		}
 	}
 	focus = {
@@ -10423,7 +10471,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_political_power = 50
+			capital_scope = { add_extra_state_shared_building_slots = 1 add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
+			random_owned_controlled_state = { limit = { synthetic_refinery < 5 } add_building_construction = { type = synthetic_refinery level = 1 instant_build = yes } }
 			random_owned_controlled_state = { add_resource = { type = oil amount = 6 } }
 		}
 	}

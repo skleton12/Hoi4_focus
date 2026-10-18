@@ -173,6 +173,16 @@ def rewards(effect):
             out.append(f"recruit_character = {character}")
     if (n := num(effect, r"(?<!일일 )(?<!획득 )정치력 \+(\d+)(?![\d%])")):
         out.append(f"add_political_power = {n}")
+    for word, eq in (("포병 장비", "artillery_equipment"), ("지원 장비", "support_equipment")):
+        if (n := num(effect, word + r" (\d+)(?![\d%])")):
+            out.append(f"add_equipment_to_stockpile = {{ type = {eq} amount = {n} }}")
+    # 수도에 바로 짓는 건물 (공장 칸을 쓰지 않는 건물 / 쓰는 건물은 칸도 같이 준다)
+    for word, bld, slot in (("공군 기지", "air_base", False), ("레이더", "radar_station", False),
+                            ("대공포", "anti_air_building", False), ("합성 정유소", "synthetic_refinery", True),
+                            ("연료 저장고", "fuel_silo", True)):
+        if (n := num(effect, word + r" \+(\d+) \(수도\)")):
+            extra = f"add_extra_state_shared_building_slots = {n} " if slot else ""
+            out.append(f"capital_scope = {{ {extra}add_building_construction = {{ type = {bld} level = {n} instant_build = yes }} }}")
     if (n := num(effect, r"병력 \+(\d+)천")):
         out.append(f"add_manpower = {n * 1000}")
     if (n := num(effect, r"민간공장 \+(\d+)(?![\d%])")):
@@ -457,6 +467,15 @@ def icon_for(branch, name, effect):
     return BRANCH_ICON.get(branch, "GFX_goal_generic_political_pressure")
 
 
+SPIRIT_EXTRA = {
+    "industry": [("production_speed_buildings_factor", 0.05), ("stability_factor", 0.03)],
+    "military": [("army_org_factor", 0.03), ("war_support_factor", 0.03)],
+    "politics": [("stability_factor", 0.03), ("political_power_factor", 0.05)],
+    "diplomacy": [("political_power_factor", 0.05), ("stability_factor", 0.03)],
+    "independence": [("war_support_factor", 0.03), ("stability_factor", 0.03)],
+}
+
+
 def split_spirit(effect):
     """% 효과(MODIFIERS) 조각을 떼어 국가 정신 수정자로 돌려준다. (수정자 dict, 나머지 효과 문구)"""
     mods, rest = {}, []
@@ -571,6 +590,12 @@ def build():
                 if f["days"] == 70:
                     # 굵직한 칸: % 효과를 이름 있는 국가 정신으로 준다(게임이 툴팁에 수정자를 직접 보여 준다)
                     spirit_mods, effect = split_spirit(effect)
+                    if len(spirit_mods) == 1:
+                        # 정신이 한 줄뿐이면 갈래에 맞는 보조 수정자를 하나 더 붙인다
+                        for k, v in SPIRIT_EXTRA.get(b["branch"], []):
+                            if k not in spirit_mods:
+                                spirit_mods[k] = v
+                                break
                 tt = tooltip(effect) if effect else ""
                 if tt:
                     block.append(f"\t\t\tcustom_effect_tooltip = {fid}_tt")

@@ -6,6 +6,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_speed_industrial_complex_factor = 0.3
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_ind_war_5 = {
@@ -13,6 +14,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_ind_prod_4 = {
@@ -20,6 +22,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_max_efficiency_factor = 0.1
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_ind_sci_b_4 = {
@@ -27,6 +30,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				research_speed_factor = 0.1
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_ind_coast_a_5 = {
@@ -34,6 +38,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.1
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_ind_land_a_3 = {
@@ -41,6 +46,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_ind_land_a_5 = {
@@ -56,6 +62,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_late_rebuild_c_4 = {
@@ -63,6 +70,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				production_speed_buildings_factor = 0.05
 			}
 		}
 		GJ_idea_army_def_b_4 = {
@@ -70,6 +78,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.2
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_army_exp_b_4 = {
@@ -77,6 +86,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				experience_gain_army_unit_factor = 0.2
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_navy_coast_a_4 = {
@@ -84,6 +94,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_speed_coastal_bunker_factor = 0.4
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_air_cas_a_3 = {
@@ -91,6 +102,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				air_cas_efficiency = 0.2
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_army_spec_4 = {
@@ -98,6 +110,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				special_forces_cap_flat = 4
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_army_primacy_5 = {
@@ -105,6 +118,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_efficiency_gain_factor = 0.1
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_late_total_5 = {
@@ -112,6 +126,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.2
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_late_total_b_5 = {
@@ -119,6 +134,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				army_org_factor = 0.03
 			}
 		}
 		GJ_idea_com_adv_3 = {
@@ -126,6 +142,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_factor = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_stalin_1 = {
@@ -133,6 +150,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_factor = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_stalin_a2_4 = {
@@ -140,6 +158,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_stalin_y_4 = {
@@ -147,6 +166,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_trotsky_end_5 = {
@@ -154,6 +174,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_trotsky_a2_4 = {
@@ -177,6 +198,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_trotsky_cap_3 = {
@@ -184,6 +206,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_1 = {
@@ -199,6 +222,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_a2_4 = {
@@ -206,6 +230,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				monthly_population = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_b2_4 = {
@@ -213,6 +238,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_x_4 = {
@@ -220,6 +246,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				monthly_population = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_y_4 = {
@@ -227,6 +254,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.02
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_cap_3 = {
@@ -234,6 +262,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.3
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_anarchy_1 = {
@@ -241,6 +270,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				supply_consumption_factor = -0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_anarchy_labor_5 = {
@@ -248,6 +278,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.05
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_anarchy_end_5 = {
@@ -255,6 +286,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_anarchy_b2_4 = {
@@ -270,6 +302,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_indep_1 = {
@@ -277,6 +310,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				research_speed_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_indep_end_5 = {
@@ -284,6 +318,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_com_indep_a2_4 = {
@@ -307,6 +342,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				research_speed_factor = 0.06
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_adv_3 = {
@@ -314,6 +350,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_factor = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_1 = {
@@ -321,6 +358,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_efficiency_gain_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_labor_5 = {
@@ -328,6 +366,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				monthly_population = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_end_5 = {
@@ -335,6 +374,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_a2_4 = {
@@ -342,6 +382,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_b2_4 = {
@@ -349,6 +390,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.06
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_y_4 = {
@@ -356,6 +398,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_social_cap_3 = {
@@ -363,6 +406,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_liberal_1 = {
@@ -378,6 +422,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.06
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_liberal_b2_4 = {
@@ -385,6 +430,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				research_speed_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_liberal_x_4 = {
@@ -392,6 +438,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_liberal_cap_3 = {
@@ -399,6 +446,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_christian_doctrine_3 = {
@@ -406,6 +454,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				consumer_goods_factor = -0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_christian_b2_4 = {
@@ -413,6 +462,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_christian_x_4 = {
@@ -420,6 +470,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_christian_cap_3 = {
@@ -427,6 +478,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				drift_defence_factor = 0.4
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_conserv_order_5 = {
@@ -434,6 +486,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_conserv_end_5 = {
@@ -441,6 +494,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_conserv_b2_4 = {
@@ -448,6 +502,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dem_conserv_x_4 = {
@@ -455,6 +510,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_adv_3 = {
@@ -462,6 +518,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_efficiency_gain_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_franco_1 = {
@@ -469,6 +526,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_franco_church_5 = {
@@ -484,6 +542,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				drift_defence_factor = 0.4
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_franco_a2_4 = {
@@ -491,6 +550,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_corp_1 = {
@@ -506,6 +566,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_efficiency_gain_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_corp_b2_4 = {
@@ -513,6 +574,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_corp_x_4 = {
@@ -520,6 +582,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_corp_y_4 = {
@@ -527,6 +590,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.06
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_natsoc_1 = {
@@ -534,6 +598,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_max_efficiency_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_natsoc_end_5 = {
@@ -541,6 +606,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_natsoc_a2_4 = {
@@ -548,6 +614,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_natsoc_y_4 = {
@@ -555,6 +622,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_natsoc_cap_3 = {
@@ -562,6 +630,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.04
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_clerical_church_3 = {
@@ -569,6 +638,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.3
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_clerical_church_5 = {
@@ -584,6 +654,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				drift_defence_factor = 0.4
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_clerical_a2_4 = {
@@ -591,6 +662,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_fas_clerical_b2_4 = {
@@ -598,6 +670,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_legal_2 = {
@@ -605,6 +678,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_adv_3 = {
@@ -612,6 +686,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_factor = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_junta_1 = {
@@ -619,6 +694,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_junta_a2_4 = {
@@ -626,6 +702,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_caudillo_patron_5 = {
@@ -633,6 +710,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.2
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_caudillo_a2_4 = {
@@ -640,6 +718,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_junta_x_4 = {
@@ -647,6 +726,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_junta_cap_3 = {
@@ -654,6 +734,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_pres_1 = {
@@ -669,6 +750,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_pres_a2_4 = {
@@ -676,6 +758,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_kemal_a2_4 = {
@@ -683,6 +766,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_pres_x_4 = {
@@ -690,6 +774,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_kemal_x_4 = {
@@ -697,6 +782,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				research_speed_factor = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_pres_cap_3 = {
@@ -704,6 +790,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				political_power_gain = 0.3
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_conserv_trad_5 = {
@@ -719,6 +806,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				monthly_population = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_conserv_x_4 = {
@@ -726,6 +814,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_agrarian_end_5 = {
@@ -733,6 +822,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				monthly_population = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_agrarian_a2_4 = {
@@ -740,6 +830,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				monthly_population = 0.1
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_agrarian_b2_4 = {
@@ -755,6 +846,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.06
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_theocracy_faith_5 = {
@@ -762,6 +854,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.04
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_neu_theocracy_y_4 = {
@@ -769,6 +862,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				research_speed_factor = 0.06
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_hid_exile_5 = {
@@ -776,6 +870,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.03
+				stability_factor = 0.03
 			}
 		}
 		GJ_idea_dip_axis_aid_5 = {
@@ -783,6 +878,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				political_power_factor = 0.05
 			}
 		}
 		GJ_idea_dip_neutral_defense_3 = {
@@ -790,6 +886,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.2
+				political_power_factor = 0.05
 			}
 		}
 		GJ_idea_dip_neutral_defense_5 = {
@@ -797,6 +894,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				send_volunteer_size = 2
+				political_power_factor = 0.05
 			}
 		}
 		GJ_idea_dip_neutral_balance_3 = {
@@ -804,6 +902,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.1
+				political_power_factor = 0.05
 			}
 		}
 		GJ_idea_dip_leader_econ_2 = {
@@ -811,6 +910,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				political_power_factor = 0.05
 			}
 		}
 		GJ_idea_dip_leader_econ_5 = {
@@ -826,6 +926,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				political_power_factor = 0.05
 			}
 		}
 		GJ_idea_late_war_4 = {
@@ -857,6 +958,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_sub_loyal_c_3 = {
@@ -864,6 +966,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_sub_build_d_4 = {
@@ -871,6 +974,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_defence_factor = 0.2
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_sub_rk_5 = {
@@ -878,6 +982,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_sub_rk_b_3 = {
@@ -885,6 +990,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_sub_collab_5 = {
@@ -892,6 +998,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				non_core_manpower = 0.1
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_sub_collab_b_3 = {
@@ -899,6 +1006,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				conscription = 0.04
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_suz_comm_4 = {
@@ -906,6 +1014,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.1
+				war_support_factor = 0.03
 			}
 		}
 		GJ_idea_suz_control_b_3 = {
@@ -921,6 +1030,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_speed_bunker_factor = 0.4
+				war_support_factor = 0.03
 			}
 		}
 	}

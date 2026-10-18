@@ -1,9 +1,18 @@
-# 작업 보고서 — 기본 중점 개편 0.7.0
+# 작업 보고서 — 기본 중점 개편 0.8.0
 
 - 작성: Claude, 2026-10-12 23:30 (KST)
 - 저장소: `skleton12/Hoi4_focus` · 브랜치: `main` (0.4.4 까지는 `skleton12/hoi4_-` 의 `claude/brave-bardeen-n1yqiz`)
 - 대상 게임: HOI4 1.19.3.0.c01a (5632)
 
+
+## 0-24. 0.8.0 건물·장비·정신 보강 (2026-10-18 KST)
+
+- **수도 건물 즉시 건설:** 공군 기지(21곳)·대공포(7)·합성 정유소(6)·연료 저장고(3)·레이더. `capital_scope` + `add_building_construction`,
+  공장 칸을 쓰는 건물(정유소·저장고)은 칸도 같이 준다.
+- **장비:** 포병 장비(`artillery_equipment`), 지원 장비(`support_equipment`). 군사·독립 갈래의 포병·공병·정찰·기계화 칸.
+- 위 효과는 반복되던 보조 효과(병력·보병 장비 등)를 칸 성격에 맞게 바꾸거나 더한 것이다.
+- **국가 정신 두 줄:** 수정자가 하나뿐이던 정신 117개에 갈래별 보조 수정자 — 산업: 건설 속도(`production_speed_buildings_factor`),
+  군사: 조직력(`army_org_factor`), 정치: 안정도(`stability_factor`), 외교: 정치력, 독립: 전쟁 지원(`war_support_factor`).
 
 ## 0-23. 0.7.0 인력 효과·보조 효과 (2026-10-18 KST)
 
