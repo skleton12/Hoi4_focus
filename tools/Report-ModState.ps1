@@ -8,16 +8,23 @@
     _gj_backup 내용, 옛 문구("설계 효과") 남은 곳, error.log 의 관련 줄을 모은다.
 #>
 $ErrorActionPreference = 'Continue'
+# 저장소(tools\)에서 돌리면 reports\mod-state.txt, zip 에서 돌리면 같은 폴더의 mod-state.txt 에 쓴다
 $repo = Split-Path -Parent $PSScriptRoot
-$outDir = Join-Path $repo 'reports'
+$srcMod = Join-Path $repo 'mod\gibon_jungjeom.mod'
+if (Test-Path -LiteralPath $srcMod) {
+    $outDir = Join-Path $repo 'reports'
+} else {
+    $srcMod = Join-Path $PSScriptRoot 'gibon_jungjeom.mod'
+    $outDir = $PSScriptRoot
+}
 New-Item -ItemType Directory -Path $outDir -Force | Out-Null
 $out = Join-Path $outDir 'mod-state.txt'
 $lines = New-Object System.Collections.Generic.List[string]
 function L($s) { $lines.Add([string]$s) }
 
 L "# 기본 중점 변경 모드 PC 상태 ($(Get-Date -Format 'yyyy-MM-dd HH:mm'))"
-$want = [regex]::Match((Get-Content -LiteralPath (Join-Path $repo 'mod\gibon_jungjeom.mod') -Raw -Encoding UTF8), 'version="([^"]+)"').Groups[1].Value
-L "저장소 버전: $want"
+$want = if (Test-Path -LiteralPath $srcMod) { [regex]::Match((Get-Content -LiteralPath $srcMod -Raw -Encoding UTF8), 'version="([^"]+)"').Groups[1].Value } else { '?' }
+L "설치 파일 버전: $want"
 
 $cands = New-Object System.Collections.Generic.List[string]
 $docs = [Environment]::GetFolderPath('MyDocuments')
@@ -63,3 +70,4 @@ foreach ($hoi in @($cands | Select-Object -Unique)) {
 }
 [IO.File]::WriteAllLines($out, $lines, (New-Object Text.UTF8Encoding($false)))
 Write-Host "작성: $out"
+Write-Host "이 파일 내용을 그대로 복사해서 채팅에 붙여 주세요."

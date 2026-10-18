@@ -1,5 +1,9 @@
 ﻿# 기본 중점 변경 모드 설치 (install.bat 이 부른다)
-# 원칙: 아무것도 지우거나 치우지 않는다. 이 모드가 깔린 폴더는 모두 새 내용으로 갱신한다.
+# 하는 일 (정확히):
+#  - 이 모드가 깔린 폴더(gibon_jungjeom, new_focus 등)마다, 먼저 지금 내용을 mod\_gj_backup\<폴더>_<시각> 에 복사해 두고
+#    폴더 내용을 새 버전으로 바꾼다. .mod 의 name·path 는 그대로 둔다(런처 플레이세트 유지).
+#  - 0.4.7 이 mod\_gj_backup 으로 옮긴 이 모드의 .mod·폴더는 원래 자리에 없을 때만 되돌린다.
+#  - 다른 모드는 건드리지 않는다. 런처에서 켜진 .mod 를 옮기거나 지우지 않는다.
 $ErrorActionPreference = 'Stop'
 $src = $PSScriptRoot
 # 저장소에서 바로 돌릴 때(packaging\install.ps1)는 mod 폴더를 소스로 쓴다
@@ -32,7 +36,14 @@ function Update-Copy($hoi, $modFile) {
     $name = [regex]::Match($old, $nameRe).Groups[1].Value
     $path = [regex]::Match($old, $pathRe).Groups[1].Value
     $dir = Join-Path $hoi ($path -replace '/', '\')
-    if (Test-Path -LiteralPath $dir) { Remove-Item -LiteralPath $dir -Recurse -Force }
+    if (Test-Path -LiteralPath $dir) {
+        # 지우기 전에 지금 내용을 복사해 둔다(백업 폴더에는 .mod 가 없어 게임이 읽지 않는다)
+        $bk = Join-Path (Join-Path $hoi 'mod\_gj_backup') ((Split-Path -Leaf $dir) + '_' + (Get-Date -Format 'yyyyMMdd_HHmmss'))
+        New-Item -ItemType Directory -Path (Split-Path -Parent $bk) -Force | Out-Null
+        Copy-Item -LiteralPath $dir -Destination $bk -Recurse -Force
+        Remove-Item -LiteralPath $dir -Recurse -Force
+        Write-Host "  이전 내용 백업: $bk"
+    }
     Copy-Item -LiteralPath (Join-Path $src 'gibon_jungjeom') -Destination $dir -Recurse -Force
     $text = [regex]::Replace($srcText, '(?m)^\s*path\s*=\s*"[^"]*"', "path=`"$path`"")
     if ($name) { $text = [regex]::Replace($text, '(?m)^\s*name\s*=\s*"[^"]*"', "name=`"$name`"") }
@@ -51,16 +62,14 @@ foreach ($hoi in $cands) {
     if (Test-Path -LiteralPath $backup) {
         foreach ($f in Get-ChildItem -LiteralPath $backup -Filter '*.mod' -File) {
             $dest = Join-Path $d $f.Name
-            if (Test-Path -LiteralPath $dest) { continue }
             $p = [regex]::Match([IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8), $pathRe).Groups[1].Value
             $leaf = if ($p) { Split-Path -Leaf ($p -replace '/', '\') } else { '' }
             $bdir = if ($leaf) { Join-Path $backup $leaf } else { '' }
             $odir = if ($leaf) { Join-Path $d $leaf } else { '' }
-            if ($bdir -and (Test-Path -LiteralPath $bdir) -and -not (Test-Path -LiteralPath $odir)) {
-                Move-Item -LiteralPath $bdir -Destination $odir
-            }
-            Move-Item -LiteralPath $f.FullName -Destination $dest
-            Write-Host "  되돌림: $($f.Name)"
+            if (-not ($bdir -and (Is-Ours $bdir))) { continue }   # 이 모드가 아닌 것은 건드리지 않는다
+            # 폴더와 .mod 를 각각, 원래 자리에 없을 때만 되돌린다
+            if (-not (Test-Path -LiteralPath $odir)) { Move-Item -LiteralPath $bdir -Destination $odir; Write-Host "  되돌림: $leaf\" }
+            if (-not (Test-Path -LiteralPath $dest)) { Move-Item -LiteralPath $f.FullName -Destination $dest; Write-Host "  되돌림: $($f.Name)" }
         }
     }
 

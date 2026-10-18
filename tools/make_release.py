@@ -25,6 +25,9 @@ def main():
                 z.write(p, p.relative_to(MOD.parent))
         z.write(PACK / "install.bat", "install.bat")
         z.write(PACK / "install.ps1", "install.ps1")
+        # 상태 보고(읽기만): 문제가 생기면 사용자가 돌려서 결과를 붙여 준다
+        z.write(ROOT / "tools" / "Report-ModState.ps1", "Report-ModState.ps1")
+        z.write(PACK / "상태보고.bat", "상태보고.bat")
         # 메모장에서 깨지지 않게 BOM + CRLF
         text = (PACK / "설치방법.txt").read_text(encoding="utf-8-sig").replace("\r\n", "\n").replace("\n", "\r\n")
         z.writestr("설치방법.txt", "﻿" + text)
