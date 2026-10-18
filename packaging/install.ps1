@@ -25,6 +25,14 @@ foreach ($root in @($env:USERPROFILE, $env:OneDrive, $env:OneDriveConsumer, $env
 $cands = @($cands | Select-Object -Unique | Where-Object { Test-Path -LiteralPath $_ })
 if ($cands.Count -eq 0) { throw "HOI4 문서 폴더를 찾지 못했습니다. 게임을 한 번 실행한 뒤 다시 해 주세요." }
 
+function Resolve-ModDir($hoi, $p) {
+    # .mod 의 path 는 "mod/xxx" 처럼 상대일 수도, 런처가 쓴 "C:/Users/.../mod/xxx" 처럼 절대일 수도 있다
+    if (-not $p) { return '' }
+    # 윈도우는 / 와 \ 를 모두 받는다. 판별만 하고 문자열은 그대로 쓴다
+    if ([IO.Path]::IsPathRooted($p)) { return $p }
+    return (Join-Path $hoi $p)
+}
+
 function Is-Ours($dir) {
     (Test-Path -LiteralPath $dir) -and
     @(Get-ChildItem -LiteralPath $dir -Recurse -Filter 'gibon_jungjeom_l_*.yml' -ErrorAction SilentlyContinue).Count -gt 0
@@ -35,7 +43,7 @@ function Update-Copy($hoi, $modFile) {
     $old = [IO.File]::ReadAllText($modFile, [Text.Encoding]::UTF8)
     $name = [regex]::Match($old, $nameRe).Groups[1].Value
     $path = [regex]::Match($old, $pathRe).Groups[1].Value
-    $dir = Join-Path $hoi ($path -replace '/', '\')
+    $dir = Resolve-ModDir $hoi $path
     if (Test-Path -LiteralPath $dir) {
         # 지우기 전에 지금 내용을 복사해 둔다(백업 폴더에는 .mod 가 없어 게임이 읽지 않는다)
         $bk = Join-Path (Join-Path $hoi 'mod\_gj_backup') ((Split-Path -Leaf $dir) + '_' + (Get-Date -Format 'yyyyMMdd_HHmmss'))
@@ -78,7 +86,7 @@ foreach ($hoi in $cands) {
     foreach ($f in Get-ChildItem -LiteralPath $d -Filter '*.mod' -File) {
         $p = [regex]::Match([IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8), $pathRe).Groups[1].Value
         if (-not $p) { continue }
-        $dir = Join-Path $hoi ($p -replace '/', '\')
+        $dir = Resolve-ModDir $hoi $p
         if ((Is-Ours $dir) -or $f.Name -in @('gibon_jungjeom.mod', 'new_focus.mod')) { $mine += $f.FullName }
     }
     if ($mine.Count -gt 0) {

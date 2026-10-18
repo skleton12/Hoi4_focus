@@ -21,6 +21,15 @@ New-Item -ItemType Directory -Path $outDir -Force | Out-Null
 $out = Join-Path $outDir 'mod-state.txt'
 $lines = New-Object System.Collections.Generic.List[string]
 function L($s) { $lines.Add([string]$s) }
+function Resolve-ModDir($hoi, $p) {
+    # .mod 의 path 는 "mod/xxx" 처럼 상대일 수도, 런처가 쓴 "C:/Users/.../mod/xxx" 처럼 절대일 수도 있다
+    if (-not $p) { return '' }
+    # 윈도우는 / 와 \ 를 모두 받는다. 판별만 하고 문자열은 그대로 쓴다
+    if ([IO.Path]::IsPathRooted($p)) { return $p }
+    return (Join-Path $hoi $p)
+}
+
+
 
 L "# 기본 중점 변경 모드 PC 상태 ($(Get-Date -Format 'yyyy-MM-dd HH:mm'))"
 $want = if (Test-Path -LiteralPath $srcMod) { [regex]::Match((Get-Content -LiteralPath $srcMod -Raw -Encoding UTF8), 'version="([^"]+)"').Groups[1].Value } else { '?' }
@@ -49,7 +58,7 @@ foreach ($hoi in @($cands | Select-Object -Unique)) {
         $name = [regex]::Match($t, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value
         $path = [regex]::Match($t, '(?m)^\s*path\s*=\s*"([^"]*)"').Groups[1].Value
         $ver = [regex]::Match($t, 'version="([^"]+)"').Groups[1].Value
-        $dir = if ($path) { Join-Path $hoi ($path -replace '/', '\') } else { '' }
+        $dir = Resolve-ModDir $hoi $path
         $exists = $dir -and (Test-Path -LiteralPath $dir)
         $ours = $exists -and @(Get-ChildItem -LiteralPath $dir -Recurse -Filter 'gibon_jungjeom_l_*.yml' -ErrorAction SilentlyContinue).Count -gt 0
         $old = $ours -and @(Select-String -Path (Join-Path $dir 'localisation\*\*.yml') -Pattern '설계 효과' -List -ErrorAction SilentlyContinue).Count -gt 0
