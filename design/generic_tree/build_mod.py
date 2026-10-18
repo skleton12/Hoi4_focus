@@ -60,6 +60,9 @@ CONDITIONS = {
     "전쟁 중 전쟁 지원 30% 미만": ("available", "has_war = yes has_war_support < 0.3"),
 }
 # 집권 경로 조건은 해당 경로의 마지막 칸을 끝냈는지로 본다
+WAR_ROUTES = ("com_war", "dem_war", "fas_war", "neu_war")
+# 합법 집권의 마지막 칸(정부 교체)은 그 이념 지지율 30% 이상일 때만. 모자라면 내전·쿠데타 길로.
+LEGAL_ROUTES = {"com_legal": "communism", "dem_legal": "democratic", "fas_legal": "fascism", "neu_legal": "neutrality"}
 ROUTE_CONDITIONS = {"무장 봉기로 집권": "com_war", "군부 쿠데타로 집권": "neu_war"}
 
 IDEOLOGY = {"공산주의": "communism", "민주주의": "democratic", "파시즘": "fascism", "비동맹": "neutrality"}
@@ -274,6 +277,19 @@ def rewards(effect):
         if m.group(1) in TECH:
             out.append(f"add_tech_bonus = {{ name = {{FID}} bonus = {int(m.group(2)) / 100:.2f} uses = 1 "
                        f"category = {TECH[m.group(1)]} }}")
+    m = re.search(r"(공산주의|민주주의|파시즘) 내전 발발|(군부 쿠데타) 발발", effect)
+    if m:
+        # 정부를 먼저 새 이념으로 바꾸고, 옛 정권(이전 집권 이념)이 반란군으로 떨어져 나가는 내전을 일으킨다.
+        # 플레이어는 새 정부 쪽에 남는다. 쿠데타는 규모를 작게.
+        target = IDEOLOGY[m.group(1)] if m.group(1) else "neutrality"
+        size = 0.3 if m.group(2) else 0.5
+        elections = "yes" if target == "democratic" else "no"
+        olds = [i for i in IDEOLOGY.values() if i != target]
+        body = " ".join(f"if = {{ limit = {{ has_government = {o} }} set_country_flag = GJ_cw_{o} }}" for o in olds)
+        body += f" set_politics = {{ ruling_party = {target} elections_allowed = {elections} }}"
+        body += " " + " ".join(f"if = {{ limit = {{ has_country_flag = GJ_cw_{o} }} clr_country_flag = GJ_cw_{o} "
+                               f"start_civil_war = {{ ideology = {o} size = {size} }} }}" for o in olds)
+        out.append(f"if = {{ limit = {{ NOT = {{ has_government = {target} }} }} {body} }}")
     m = re.search(r"정부를 (공산주의|민주주의|파시즘|비동맹)(?:으)?로 교체", effect)
     if m:
         elections = "yes" if m.group(1) == "민주주의" else "no"
@@ -573,6 +589,11 @@ def build():
                             block.append(f"\t\t{kind} = {{ {trig} }}")
                 else:
                     block.append(f"\t\tprerequisite = {{ focus = {focus_id(g['id'], i - 1)} }}")
+                    if g["id"] in LEGAL_ROUTES and i == len(g["focuses"]):
+                        block.append(f"\t\tavailable = {{ {LEGAL_ROUTES[g['id']]} > 0.3 }}")
+                    if g["id"] in WAR_ROUTES and i == len(g["focuses"]):
+                        # 내전 승리 칸: 내전이 끝난 뒤에만
+                        block.append("\t\tavailable = { has_civil_war = no }")
                 block.append("\t\tsearch_filters = { FOCUS_FILTER_POLITICAL }" if b["branch"] in ("politics", "diplomacy", "independence", "start")
                              else "\t\tsearch_filters = { FOCUS_FILTER_INDUSTRY }" if b["branch"] in ("industry", "terrain", "late")
                              else "\t\tsearch_filters = { FOCUS_FILTER_RESEARCH }")

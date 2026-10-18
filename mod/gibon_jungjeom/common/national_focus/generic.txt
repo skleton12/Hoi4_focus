@@ -3909,6 +3909,7 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_com_legal_1 }
+		available = { communism > 0.3 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -3934,7 +3935,7 @@ focus_tree = {
 	}
 	focus = {
 		id = GJ_com_war_2
-		icon = GFX_goal_support_communism
+		icon = GFX_goal_generic_political_pressure
 		x = 127
 		y = 4
 		cost = 10
@@ -3943,7 +3944,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_manpower = 5000
-			set_politics = { ruling_party = communism elections_allowed = no }
+			if = { limit = { NOT = { has_government = communism } } if = { limit = { has_government = democratic } set_country_flag = GJ_cw_democratic } if = { limit = { has_government = fascism } set_country_flag = GJ_cw_fascism } if = { limit = { has_government = neutrality } set_country_flag = GJ_cw_neutrality } set_politics = { ruling_party = communism elections_allowed = no } if = { limit = { has_country_flag = GJ_cw_democratic } clr_country_flag = GJ_cw_democratic start_civil_war = { ideology = democratic size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_fascism } clr_country_flag = GJ_cw_fascism start_civil_war = { ideology = fascism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_neutrality } clr_country_flag = GJ_cw_neutrality start_civil_war = { ideology = neutrality size = 0.5 } } }
 		}
 	}
 	focus = {
@@ -3953,6 +3954,7 @@ focus_tree = {
 		y = 5
 		cost = 5
 		prerequisite = { focus = GJ_com_war_2 }
+		available = { has_civil_war = no }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -6267,6 +6269,7 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_dem_legal_1 }
+		available = { democratic > 0.3 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -6300,8 +6303,8 @@ focus_tree = {
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
-			add_stability = 0.05
-			set_politics = { ruling_party = democratic elections_allowed = yes }
+			add_manpower = 5000
+			if = { limit = { NOT = { has_government = democratic } } if = { limit = { has_government = communism } set_country_flag = GJ_cw_communism } if = { limit = { has_government = fascism } set_country_flag = GJ_cw_fascism } if = { limit = { has_government = neutrality } set_country_flag = GJ_cw_neutrality } set_politics = { ruling_party = democratic elections_allowed = yes } if = { limit = { has_country_flag = GJ_cw_communism } clr_country_flag = GJ_cw_communism start_civil_war = { ideology = communism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_fascism } clr_country_flag = GJ_cw_fascism start_civil_war = { ideology = fascism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_neutrality } clr_country_flag = GJ_cw_neutrality start_civil_war = { ideology = neutrality size = 0.5 } } }
 		}
 	}
 	focus = {
@@ -6311,6 +6314,7 @@ focus_tree = {
 		y = 5
 		cost = 5
 		prerequisite = { focus = GJ_dem_war_2 }
+		available = { has_civil_war = no }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -8192,6 +8196,7 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_fas_legal_1 }
+		available = { fascism > 0.3 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -8216,7 +8221,7 @@ focus_tree = {
 	}
 	focus = {
 		id = GJ_fas_war_2
-		icon = GFX_goal_support_fascism
+		icon = GFX_goal_generic_political_pressure
 		x = 199
 		y = 4
 		cost = 10
@@ -8225,7 +8230,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_manpower = 5000
-			set_politics = { ruling_party = fascism elections_allowed = no }
+			if = { limit = { NOT = { has_government = fascism } } if = { limit = { has_government = communism } set_country_flag = GJ_cw_communism } if = { limit = { has_government = democratic } set_country_flag = GJ_cw_democratic } if = { limit = { has_government = neutrality } set_country_flag = GJ_cw_neutrality } set_politics = { ruling_party = fascism elections_allowed = no } if = { limit = { has_country_flag = GJ_cw_communism } clr_country_flag = GJ_cw_communism start_civil_war = { ideology = communism size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_democratic } clr_country_flag = GJ_cw_democratic start_civil_war = { ideology = democratic size = 0.5 } } if = { limit = { has_country_flag = GJ_cw_neutrality } clr_country_flag = GJ_cw_neutrality start_civil_war = { ideology = neutrality size = 0.5 } } }
 		}
 	}
 	focus = {
@@ -8235,6 +8240,7 @@ focus_tree = {
 		y = 5
 		cost = 5
 		prerequisite = { focus = GJ_fas_war_2 }
+		available = { has_civil_war = no }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -10117,6 +10123,7 @@ focus_tree = {
 		y = 4
 		cost = 10
 		prerequisite = { focus = GJ_neu_legal_1 }
+		available = { neutrality > 0.3 }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
@@ -10141,7 +10148,7 @@ focus_tree = {
 	}
 	focus = {
 		id = GJ_neu_war_2
-		icon = GFX_goal_generic_neutrality_focus
+		icon = GFX_goal_generic_political_pressure
 		x = 237
 		y = 4
 		cost = 10
@@ -10150,7 +10157,7 @@ focus_tree = {
 		ai_will_do = { factor = 1 }
 		completion_reward = {
 			add_political_power = 150
-			set_politics = { ruling_party = neutrality elections_allowed = no }
+			if = { limit = { NOT = { has_government = neutrality } } if = { limit = { has_government = communism } set_country_flag = GJ_cw_communism } if = { limit = { has_government = democratic } set_country_flag = GJ_cw_democratic } if = { limit = { has_government = fascism } set_country_flag = GJ_cw_fascism } set_politics = { ruling_party = neutrality elections_allowed = no } if = { limit = { has_country_flag = GJ_cw_communism } clr_country_flag = GJ_cw_communism start_civil_war = { ideology = communism size = 0.3 } } if = { limit = { has_country_flag = GJ_cw_democratic } clr_country_flag = GJ_cw_democratic start_civil_war = { ideology = democratic size = 0.3 } } if = { limit = { has_country_flag = GJ_cw_fascism } clr_country_flag = GJ_cw_fascism start_civil_war = { ideology = fascism size = 0.3 } } }
 		}
 	}
 	focus = {
@@ -10160,6 +10167,7 @@ focus_tree = {
 		y = 5
 		cost = 5
 		prerequisite = { focus = GJ_neu_war_2 }
+		available = { has_civil_war = no }
 		search_filters = { FOCUS_FILTER_POLITICAL }
 		ai_will_do = { factor = 1 }
 		completion_reward = {
