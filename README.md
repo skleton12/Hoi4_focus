@@ -29,6 +29,8 @@ Hearts of Iron IV 의 **기본(제네릭) 국가 중점 트리**를 새로 짠 �
 | `mod/gibon_jungjeom/`, `mod/gibon_jungjeom.mod` | 생성된 모드 (직접 고치지 말고 생성기로 만든다) |
 | `tools/validate.py` | 모드 문법·참조 검사 |
 | `tools/Install-Mod.ps1`, `Check-Hoi4Mod.ps1`, `Test-Mod.ps1` | Windows 설치 · 진단 · 시험 |
+| `tools/Report-ModState.ps1` | PC 상태 보고서(읽기만) → `reports/mod-state.txt` |
+| `packaging/install.ps1` | 설치(zip 의 install.bat). 저장소에서 바로 돌려도 된다 |
 | `tools/make_release.py`, `packaging/` | 시험판 zip 만들기 |
 
 ## 고치는 순서
@@ -44,4 +46,4 @@ python3 design/generic_tree/render.py       # 그림 갱신 (Pillow 필요)
 python3 tools/make_release.py               # releases/gibon_jungjeom_<버전>.zip
 ```
 
-Claude 와 GPT(Codex) 가 이 저장소의 파일로 함께 작업한다. 규칙은 `design/generic_tree/AGENTS.md`.
+Claude 와 GPT(Codex) 가 이 저장소의 파일로 함께 작업한다. **GPT 의 PC 작업 순서는 [`GPT_TASK.md`](GPT_TASK.md).** 규칙은 `design/generic_tree/AGENTS.md`.

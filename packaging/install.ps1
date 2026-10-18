@@ -2,6 +2,8 @@
 # 원칙: 아무것도 지우거나 치우지 않는다. 이 모드가 깔린 폴더는 모두 새 내용으로 갱신한다.
 $ErrorActionPreference = 'Stop'
 $src = $PSScriptRoot
+# 저장소에서 바로 돌릴 때(packaging\install.ps1)는 mod 폴더를 소스로 쓴다
+if (-not (Test-Path -LiteralPath (Join-Path $src 'gibon_jungjeom.mod'))) { $src = Join-Path (Split-Path -Parent $PSScriptRoot) 'mod' }
 $utf8NoBom = New-Object Text.UTF8Encoding($false)
 $nameRe = '(?m)^\s*name\s*=\s*"([^"]*)"'
 $pathRe = '(?m)^\s*path\s*=\s*"([^"]*)"'
