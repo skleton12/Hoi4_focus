@@ -11,7 +11,7 @@
 
 ## 설치
 
-1. zip 을 내려받아 압축을 푼다.
+1. zip 을 내려받아 **오른쪽 클릭 → 압축 풀기**로 푼다. zip 안에서 바로 `install.bat` 을 누르면 실행되지 않는다.
 2. `install.bat` 을 더블클릭한다.
    - 이 모드가 이미 깔린 폴더(`gibon_jungjeom`, `new_focus` 등)는 지금 내용을 `mod\_gj_backup` 에 복사해 둔 뒤 새 버전으로 바꾼다.
    - 문제가 있으면 `상태보고.bat` → 열리는 `mod-state.txt` 를 붙여 준다.

@@ -9,7 +9,7 @@ Hearts of Iron IV 의 **기본(제네릭) 국가 중점 트리**를 새로 짠 �
 
 ## 내려받아 설치하기
 
-1. [`releases/`](releases/) 에서 최신 zip 을 받아 압축을 푼다.
+1. [`releases/`](releases/) 에서 최신 zip 을 받아 **오른쪽 클릭 → 압축 풀기**로 푼다(zip 안에서 바로 실행하면 안 된다).
 2. `install.bat` 더블클릭 → 문서\Paradox Interactive\Hearts of Iron IV\mod 에 복사된다.
    이 모드가 이미 깔린 폴더(`gibon_jungjeom`, `new_focus` 등)는 지금 내용을 `mod\_gj_backup\<폴더>_<시각>` 에 복사해 둔 뒤 새 버전으로 바꾼다.
    문제가 있으면 zip 의 `상태보고.bat` 을 실행하고 `mod-state.txt` 를 붙여 준다.
