@@ -114,10 +114,17 @@ $modRoot = Join-Path $userDir 'mod'
 if (-not (Test-Path -LiteralPath $modRoot)) { New-Item -ItemType Directory -Path $modRoot -Force | Out-Null }
 # 설치 폴더 이름. 사용자 PC 에는 기본 중점 모드가 new_focus 로 깔려 있어 그 폴더를 갱신한다(플레이세트 유지).
 if (-not $InstallAs) {
-    if ($ModFolderName -eq 'gibon_jungjeom' -and (Test-Path -LiteralPath (Join-Path $modRoot 'new_focus.mod'))) {
-        $InstallAs = 'new_focus'
-    } else {
-        $InstallAs = $ModFolderName
+    $InstallAs = $ModFolderName
+    if ($ModFolderName -eq 'gibon_jungjeom') {
+        # 런처에서 켜 둔 쪽(dlc_load.json)을 먼저, 없으면 이미 깔린 new_focus 를 갱신한다
+        $enabledNow = @()
+        $dlcNow = Join-Path $userDir 'dlc_load.json'
+        if (Test-Path -LiteralPath $dlcNow) {
+            try { $enabledNow = @((Get-Content -LiteralPath $dlcNow -Raw -Encoding UTF8 | ConvertFrom-Json).enabled_mods) } catch { }
+        }
+        if ($enabledNow -contains 'mod/gibon_jungjeom.mod') { $InstallAs = 'gibon_jungjeom' }
+        elseif ($enabledNow -contains 'mod/new_focus.mod') { $InstallAs = 'new_focus' }
+        elseif (Test-Path -LiteralPath (Join-Path $modRoot 'new_focus.mod')) { $InstallAs = 'new_focus' }
     }
 }
 if ($InstallAs -ne $ModFolderName) { Info "설치 폴더: mod\$InstallAs (기존 설치를 갱신)" }
@@ -163,25 +170,12 @@ Ok "작성: $outerPath"
 # 같은 name 을 쓰는 다른 .mod 가 있으면 경고한다. 위키: 이름이 같으면 먼저 읽힌 쪽(파일 이름 순)만 쓰인다.
 # 예전 설치·수동 복사가 남긴 .mod 가 폴더 없이 남아 있으면 새 모드를 가린다.
 $myName = [regex]::Match($modText, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value
-$backupRoot = Join-Path $modRoot '_gj_backup'
 foreach ($other in Get-ChildItem -LiteralPath $modRoot -Filter '*.mod' -File) {
     if ($other.FullName -eq $outerPath) { continue }
     $otherText = [System.IO.File]::ReadAllText($other.FullName, [System.Text.Encoding]::UTF8)
-    # 이 모드의 예전 설치본(다른 폴더 이름)은 백업으로 옮긴다. 같이 켜져 있으면 예전 문구가 새 문구를 덮는다.
-    $otherPath = [regex]::Match($otherText, '(?m)^\s*path\s*=\s*"([^"]*)"').Groups[1].Value
-    $otherDir = if ($otherPath) { Join-Path $userDir ($otherPath -replace '/', '\') } else { $null }
-    $isOurs = ($ModFolderName -eq 'gibon_jungjeom') -and $otherDir -and (Test-Path -LiteralPath $otherDir) -and
-              ((Get-Item -LiteralPath $otherDir).FullName -ne (Get-Item -LiteralPath $target).FullName) -and
-              @(Get-ChildItem -LiteralPath $otherDir -Recurse -Filter 'gibon_jungjeom_l_*.yml' -ErrorAction SilentlyContinue).Count -gt 0
-    if ($isOurs) {
-        New-Item -ItemType Directory -Path $backupRoot -Force | Out-Null
-        Move-Item -LiteralPath $other.FullName -Destination (Join-Path $backupRoot $other.Name) -Force
-        $dest = Join-Path $backupRoot (Split-Path -Leaf $otherDir)
-        if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Recurse -Force }
-        Move-Item -LiteralPath $otherDir -Destination $dest -Force
-        Warn "예전 설치본을 _gj_backup 으로 옮겼다: $($other.Name)"
-    } elseif ([regex]::Match($otherText, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value -eq $myName) {
-        Warn "같은 이름(name=`"$myName`")의 다른 디스크립터가 있다: $($other.Name). 이 모드를 가릴 수 있으니 옮기거나 지울 것."
+    # 아무것도 옮기거나 지우지 않는다(0.4.7 에서 켜져 있던 설치본을 치워 모드가 꺼진 일이 있었다). 경고만 한다.
+    if ([regex]::Match($otherText, '(?m)^\s*name\s*=\s*"([^"]*)"').Groups[1].Value -eq $myName) {
+        Warn "같은 이름(name=`"$myName`")의 다른 디스크립터가 있다: $($other.Name). 런처에서 어느 쪽이 켜져 있는지 확인할 것."
     }
 }
 

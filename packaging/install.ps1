@@ -1,11 +1,14 @@
 ﻿# 기본 중점 변경 모드 설치 (install.bat 이 부른다)
+# 원칙: 아무것도 지우거나 치우지 않는다. 이 모드가 깔린 폴더는 모두 새 내용으로 갱신한다.
 $ErrorActionPreference = 'Stop'
 $src = $PSScriptRoot
 $utf8NoBom = New-Object Text.UTF8Encoding($false)
 $nameRe = '(?m)^\s*name\s*=\s*"([^"]*)"'
-$pathRe = '(?m)^\s*path\s*=\s*"[^"]*"'
+$pathRe = '(?m)^\s*path\s*=\s*"([^"]*)"'
+$srcText = [IO.File]::ReadAllText((Join-Path $src 'gibon_jungjeom.mod'), [Text.Encoding]::UTF8)
+$ver = [regex]::Match($srcText, 'version="([^"]+)"').Groups[1].Value
 
-# 0) HOI4 사용자 폴더 찾기. 문서 폴더가 OneDrive 로 옮겨진 PC 가 있어 후보를 모두 본다.
+# HOI4 사용자 폴더 후보 (문서 폴더가 OneDrive 로 옮겨진 PC 포함)
 $cands = New-Object System.Collections.Generic.List[string]
 $docs = [Environment]::GetFolderPath('MyDocuments')
 if ($docs) { $cands.Add((Join-Path $docs 'Paradox Interactive\Hearts of Iron IV')) }
@@ -13,63 +16,82 @@ foreach ($root in @($env:USERPROFILE, $env:OneDrive, $env:OneDriveConsumer, $env
     if (-not $root) { continue }
     foreach ($dn in @('Documents', '문서')) { $cands.Add((Join-Path $root (Join-Path $dn 'Paradox Interactive\Hearts of Iron IV'))) }
 }
-$cands = @($cands | Select-Object -Unique)
-# 이미 new_focus 가 깔린 곳, 게임이 쓰는 곳(dlc_load.json) 을 모두 설치 대상으로 한다
-$targets = @($cands | Where-Object { (Test-Path -LiteralPath (Join-Path $_ 'mod\new_focus.mod')) -or (Test-Path -LiteralPath (Join-Path $_ 'dlc_load.json')) })
-if ($targets.Count -eq 0) { $targets = @($cands | Where-Object { Test-Path -LiteralPath $_ } | Select-Object -First 1) }
-if ($targets.Count -eq 0) { $targets = @($cands[0]) }
+$cands = @($cands | Select-Object -Unique | Where-Object { Test-Path -LiteralPath $_ })
+if ($cands.Count -eq 0) { throw "HOI4 문서 폴더를 찾지 못했습니다. 게임을 한 번 실행한 뒤 다시 해 주세요." }
 
-function Install-To($hoi) {
+function Is-Ours($dir) {
+    (Test-Path -LiteralPath $dir) -and
+    @(Get-ChildItem -LiteralPath $dir -Recurse -Filter 'gibon_jungjeom_l_*.yml' -ErrorAction SilentlyContinue).Count -gt 0
+}
+
+function Update-Copy($hoi, $modFile) {
+    # 기존 .mod 의 name·path 를 그대로 두고 내용과 버전만 바꾼다(런처 플레이세트가 그대로 유지된다)
+    $old = [IO.File]::ReadAllText($modFile, [Text.Encoding]::UTF8)
+    $name = [regex]::Match($old, $nameRe).Groups[1].Value
+    $path = [regex]::Match($old, $pathRe).Groups[1].Value
+    $dir = Join-Path $hoi ($path -replace '/', '\')
+    if (Test-Path -LiteralPath $dir) { Remove-Item -LiteralPath $dir -Recurse -Force }
+    Copy-Item -LiteralPath (Join-Path $src 'gibon_jungjeom') -Destination $dir -Recurse -Force
+    $text = [regex]::Replace($srcText, '(?m)^\s*path\s*=\s*"[^"]*"', "path=`"$path`"")
+    if ($name) { $text = [regex]::Replace($text, '(?m)^\s*name\s*=\s*"[^"]*"', "name=`"$name`"") }
+    [IO.File]::WriteAllText($modFile, $text, $utf8NoBom)
+    $inner = [regex]::Replace($text, '(?m)^\s*path\s*=\s*"[^"]*"\r?\n?', '')
+    [IO.File]::WriteAllText((Join-Path $dir 'descriptor.mod'), $inner, $utf8NoBom)
+    Write-Host "  갱신: $dir  ($name)"
+}
+
+foreach ($hoi in $cands) {
     $d = Join-Path $hoi 'mod'
-    if (-not (Test-Path -LiteralPath $d)) { New-Item -ItemType Directory -Path $d -Force | Out-Null }
+    if (-not (Test-Path -LiteralPath $d)) { continue }
 
-    # 설치 폴더 이름. 이미 new_focus 로 깔려 있으면 그 폴더를 갱신한다(런처 플레이세트가 그대로 유지된다).
-    $folder = 'gibon_jungjeom'
-    if (Test-Path -LiteralPath (Join-Path $d 'new_focus.mod')) { $folder = 'new_focus' }
-    $outer = Join-Path $d "$folder.mod"
-
-    $myText = [IO.File]::ReadAllText((Join-Path $src 'gibon_jungjeom.mod'), [Text.Encoding]::UTF8)
-    $myText = [regex]::Replace($myText, $pathRe, "path=`"mod/$folder`"")
-    if (Test-Path -LiteralPath $outer) {
-        # 기존 name 을 그대로 쓴다(런처가 같은 모드로 알아본다)
-        $old = [regex]::Match([IO.File]::ReadAllText($outer, [Text.Encoding]::UTF8), $nameRe)
-        if ($old.Success) { $myText = [regex]::Replace($myText, $nameRe, "name=`"$($old.Groups[1].Value)`"") }
-    }
-    $myName = [regex]::Match($myText, $nameRe).Groups[1].Value
+    # 1) 0.4.7 이 _gj_backup 으로 옮긴 이 모드의 설치본을 원래 자리로 되돌린다
     $backup = Join-Path $d '_gj_backup'
-
-    # 1) 이 모드의 예전 설치본(다른 폴더 이름)을 백업으로 옮긴다. 둘 다 켜져 있으면 예전 문구가 새 문구를 덮는다.
-    foreach ($f in Get-ChildItem -LiteralPath $d -Filter '*.mod' -File) {
-        if ($f.Name -eq "$folder.mod") { continue }
-        $t = [IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8)
-        $p = [regex]::Match($t, '(?m)^\s*path\s*=\s*"([^"]*)"').Groups[1].Value
-        $oldDir = if ($p) { Join-Path $hoi ($p -replace '/', '\') } else { $null }
-        $isOurs = $oldDir -and (Test-Path -LiteralPath $oldDir) -and
-                  @(Get-ChildItem -LiteralPath $oldDir -Recurse -Filter 'gibon_jungjeom_l_*.yml' -ErrorAction SilentlyContinue).Count -gt 0
-        $sameName = [regex]::Match($t, $nameRe).Groups[1].Value -eq $myName
-        if ($isOurs -or $sameName) {
-            New-Item -ItemType Directory -Path $backup -Force | Out-Null
-            Move-Item -LiteralPath $f.FullName -Destination (Join-Path $backup $f.Name) -Force
-            if ($isOurs -and ((Split-Path -Leaf $oldDir) -ne $folder)) {
-                $dest = Join-Path $backup (Split-Path -Leaf $oldDir)
-                if (Test-Path -LiteralPath $dest) { Remove-Item -LiteralPath $dest -Recurse -Force }
-                Move-Item -LiteralPath $oldDir -Destination $dest -Force
+    if (Test-Path -LiteralPath $backup) {
+        foreach ($f in Get-ChildItem -LiteralPath $backup -Filter '*.mod' -File) {
+            $dest = Join-Path $d $f.Name
+            if (Test-Path -LiteralPath $dest) { continue }
+            $p = [regex]::Match([IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8), $pathRe).Groups[1].Value
+            $leaf = if ($p) { Split-Path -Leaf ($p -replace '/', '\') } else { '' }
+            $bdir = if ($leaf) { Join-Path $backup $leaf } else { '' }
+            $odir = if ($leaf) { Join-Path $d $leaf } else { '' }
+            if ($bdir -and (Test-Path -LiteralPath $bdir) -and -not (Test-Path -LiteralPath $odir)) {
+                Move-Item -LiteralPath $bdir -Destination $odir
             }
-            Write-Host "  예전 설치본을 _gj_backup 으로 옮김: $($f.Name)"
+            Move-Item -LiteralPath $f.FullName -Destination $dest
+            Write-Host "  되돌림: $($f.Name)"
         }
     }
 
-    # 2) 모드 폴더를 통째로 바꾸고, .mod 두 개(폴더 옆 + 폴더 안)를 쓴다
-    $t = Join-Path $d $folder
-    if (Test-Path -LiteralPath $t) { Remove-Item -LiteralPath $t -Recurse -Force }
-    Copy-Item -LiteralPath (Join-Path $src 'gibon_jungjeom') -Destination $t -Recurse -Force
-    [IO.File]::WriteAllText($outer, $myText, $utf8NoBom)
-    $inner = [regex]::Replace($myText, '(?m)^\s*path\s*=\s*"[^"]*"\r?\n?', '')
-    [IO.File]::WriteAllText((Join-Path $t 'descriptor.mod'), $inner, $utf8NoBom)
-    Write-Host "OK. 설치 완료: $t"
+    # 2) 이 모드가 깔린 모든 폴더를 갱신한다
+    $mine = @()
+    foreach ($f in Get-ChildItem -LiteralPath $d -Filter '*.mod' -File) {
+        $p = [regex]::Match([IO.File]::ReadAllText($f.FullName, [Text.Encoding]::UTF8), $pathRe).Groups[1].Value
+        if (-not $p) { continue }
+        $dir = Join-Path $hoi ($p -replace '/', '\')
+        if ((Is-Ours $dir) -or $f.Name -in @('gibon_jungjeom.mod', 'new_focus.mod')) { $mine += $f.FullName }
+    }
+    if ($mine.Count -gt 0) {
+        Write-Host "[$hoi]"
+        foreach ($m in $mine) { Update-Copy $hoi $m }
+    }
 }
 
-foreach ($hoi in $targets) { Install-To $hoi }
-$ver = [regex]::Match([IO.File]::ReadAllText((Join-Path $src 'gibon_jungjeom.mod'), [Text.Encoding]::UTF8), 'version="([^"]+)"').Groups[1].Value
+# 3) 어디에도 없으면 새로 깐다 (게임이 쓰는 폴더 = dlc_load.json 이 있는 곳)
+$any = $false
+foreach ($hoi in $cands) {
+    foreach ($f in Get-ChildItem -LiteralPath (Join-Path $hoi 'mod') -Filter '*.mod' -File -ErrorAction SilentlyContinue) {
+        if (Is-Ours (Join-Path $hoi ('mod\' + [IO.Path]::GetFileNameWithoutExtension($f.Name)))) { $any = $true }
+    }
+}
+if (-not $any) {
+    $hoi = @($cands | Where-Object { Test-Path -LiteralPath (Join-Path $_ 'dlc_load.json') }) + $cands | Select-Object -First 1
+    $d = Join-Path $hoi 'mod'
+    New-Item -ItemType Directory -Path $d -Force | Out-Null
+    $modFile = Join-Path $d 'gibon_jungjeom.mod'
+    [IO.File]::WriteAllText($modFile, $srcText, $utf8NoBom)
+    Update-Copy $hoi $modFile
+}
+
 Write-Host ""
-Write-Host "런처에서 이 모드 하나만 켜고 실행하세요. 중점에 마우스를 올리면 설명 끝에 (v$ver) 가 보여야 새 설치본입니다."
+Write-Host "완료 (v$ver). 런처 플레이세트에서 '기본 중점 변경 모드' 가 켜져 있는지 확인하고 실행하세요."
+Write-Host "중점에 마우스를 올리면 설명 끝에 (v$ver) 가 보여야 합니다."
