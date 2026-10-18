@@ -1,0 +1,10 @@
+# 복구 후 상태: 수집 불가 (실제 PC 진단 결과 아님)
+확인일: 2026-10-18
+검토 기준 main: 2d0e2513fcb0c4728c4bdd79e94cb84af9fcf93c
+실행 환경: Linux 원격 작업 환경, PowerShell 없음.
+사용자 Windows C드라이브 및 HOI4/런처에 연결되지 않음.
+Report-ModState.ps1 실행: 미실행
+packaging/install.ps1 실행: 미실행
+사용자 PC 모드 파일, dlc_load.json, _gj_backup, error.log: 미수집
+복구 전후 차이 및 복구 성공 여부: 판정 불가
+Windows에서 GPT_TASK.md의 명령을 실행해 이 파일을 실제 진단 출력으로 교체해야 함.
