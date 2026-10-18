@@ -2,6 +2,7 @@
 
 | 파일 | 버전 | 대상 게임 |
 |---|---|---|
+| [`gibon_jungjeom_0.9.0.zip`](gibon_jungjeom_0.9.0.zip) | 0.9.0 | HOI4 1.19.3 |
 | [`gibon_jungjeom_0.8.2.zip`](gibon_jungjeom_0.8.2.zip) | 0.8.2 | HOI4 1.19.3 |
 | [`gibon_jungjeom_0.8.1.zip`](gibon_jungjeom_0.8.1.zip) | 0.8.1 | HOI4 1.19.3 |
 | [`gibon_jungjeom_0.8.0.zip`](gibon_jungjeom_0.8.0.zip) | 0.8.0 | HOI4 1.19.3 |

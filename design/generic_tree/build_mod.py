@@ -164,6 +164,11 @@ ADVISORS = {
 }
 
 
+# 생성 중인 칸이 속한 갈래(정신 이름). build() 가 칸마다 정한다. 비어 있으면 예전 개혁 정신 셋을 쓴다.
+CLUSTER = {"id": None, "title": None}
+CLUSTER_MODS = {}
+
+
 def state_count(effect, word):
     m = re.search(word + r" \+\d+ \((\d+)개 주\)", effect)
     return int(m.group(1)) if m else 1
@@ -314,15 +319,34 @@ def rewards(effect):
                    for current, following in rest)
 
     adds, spirits = [], []
+    cluster = CLUSTER["id"]
     for pattern, modifier, scale, spirit in MODIFIERS:
         for match in re.finditer(pattern, effect):
             value = float(match.group(1)) * scale
             if not value:
                 continue
-            adds.append(f"add_to_variable = {{ var = GJ_{modifier} value = {value:g} }}")
+            variable = f"GJ_{cluster}__{modifier}" if cluster else f"GJ_{modifier}"
+            adds.append(f"add_to_variable = {{ var = {variable} value = {value:g} }}")
+            if cluster:
+                CLUSTER_MODS.setdefault(cluster, {"title": CLUSTER["title"], "mods": []})
+                if modifier not in CLUSTER_MODS[cluster]["mods"]:
+                    CLUSTER_MODS[cluster]["mods"].append(modifier)
             if spirit not in spirits:
                 spirits.append(spirit)
     hidden = []
+    if cluster and adds:
+        # 갈래마다 이름 있는 정신 하나(GJ_dm_<갈래>)에 그 갈래 효과만 쌓는다. 쓰는 수정자는 모두 먼저 0 으로.
+        for modifier in CLUSTER_MODS[cluster]["mods"]:
+            variable = f"GJ_{cluster}__{modifier}"
+            hidden.append(f"if = {{ limit = {{ NOT = {{ has_variable = {variable} }} }} "
+                          f"set_variable = {{ var = {variable} value = 0 }} }}")
+        hidden.extend(adds)
+        name = f"GJ_dm_{cluster}"
+        hidden.append(f"if = {{ limit = {{ NOT = {{ has_dynamic_modifier = {{ modifier = {name} }} }} }} "
+                      f"add_dynamic_modifier = {{ modifier = {name} }} }}")
+        hidden.append("force_update_dynamic_modifier = yes")
+        out.append("hidden_effect = { " + " ".join(hidden) + " }")
+        return out
     for spirit in spirits:
         # A dynamic modifier reads every referenced variable when first added.
         # Initialize unused fields without erasing accumulated bonuses.
@@ -363,7 +387,8 @@ def tooltip(effect):
     for part in re.split(r",\s*", effect):
         spirit = next((sp for pattern, _, _, sp in MODIFIERS if re.search(pattern, part)), None)
         if spirit:
-            lines.append(f"§Y{SPIRITS[spirit][1]}§!: {colored(part)}")
+            label = CLUSTER["title"] if CLUSTER["id"] else SPIRITS[spirit][1]
+            lines.append(f"§Y{label}§!: {colored(part)}")
         elif not rewards(part):
             lines.append(f"§g{part} (준비 중)§!")
     return "\\n".join(lines)
@@ -386,6 +411,9 @@ def dynamic_modifier_file():
                 seen.append(modifier)
         body = "\n".join(f"\t{m} = GJ_{m}" for m in seen)
         text += f"{name} = {{\n\ticon = {icon}\n\tenable = {{ always = yes }}\n{body}\n}}\n"
+    for cluster, info in CLUSTER_MODS.items():
+        body = "\n".join(f"\t{m} = GJ_{cluster}__{m}" for m in info["mods"])
+        text += f"GJ_dm_{cluster} = {{\n\ticon = GFX_idea_generic_political_pressure\n\tenable = {{ always = yes }}\n{body}\n}}\n"
     return text
 
 
@@ -568,7 +596,27 @@ def build():
             if g["exclusive"]:
                 siblings.setdefault((g["exclusive"], str(g["after"])), []).append(g["id"])
 
+        by_gid = {gg["id"]: gg for gg in groups}
+
+        has_child = {p for gg in groups for p in (gg["after"] if isinstance(gg["after"], list) else [gg["after"]]) if p}
+
+        def first_parent(gg):
+            return gg["after"][0] if isinstance(gg["after"], list) else gg["after"]
+
+        def cluster_of(gg):
+            # 정신 이름이 되는 소갈래: 뿌리, 이념 모델 머리, 또는 뿌리 바로 아래에서 다시 가지를 치는 소갈래(도시 개혁 등)
+            while gg["after"]:
+                if (gg["exclusive"] or "").endswith("_model"):
+                    break
+                parent = by_gid[first_parent(gg)]
+                if gg["id"] in has_child and not parent["after"] and not isinstance(gg["after"], list):
+                    break
+                gg = parent
+            return gg
+
         for g in groups:
+            cg = cluster_of(g)
+            CLUSTER["id"], CLUSTER["title"] = cg["id"], cg["title"]
             x = x_offset + int(round(pos[g["id"]][0] * 2))
             for i, f in enumerate(g["focuses"], 1):
                 fid = focus_id(g["id"], i)
@@ -659,6 +707,11 @@ def build():
         loc.append(f' {name}_desc:0 "기본 중점에서 쌓은 {title}의 누적 효과."')
     for _, (character, name, _, _) in ADVISORS.items():
         loc.append(f' {character}:0 "{name}"')
+    CLUSTER["id"] = CLUSTER["title"] = None
+    for cluster, info in CLUSTER_MODS.items():
+        loc.append(f' GJ_dm_{cluster}:0 "{info["title"]}"')
+        loc.append(f' GJ_dm_{cluster}_desc:0 "「{info["title"]}」 갈래 중점에서 쌓은 효과."')
+    print(f"갈래 정신 {len(CLUSTER_MODS)}개")
     dyn = MOD / "common" / "dynamic_modifiers" / "gibon_jungjeom_modifiers.txt"
     dyn.parent.mkdir(parents=True, exist_ok=True)
     dyn.write_text(dynamic_modifier_file(), encoding="utf-8")
