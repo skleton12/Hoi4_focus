@@ -93,6 +93,8 @@ MODIFIERS = [
     (r"특수부대 대대 한도 ([+-]\d+)", "special_forces_cap_flat", 1, "mil"),
     (r"의용군 파견 한도 ([+-]\d+)", "send_volunteer_size", 1, "mil"),
     (r"징집 인력 \+(\d+)%", "conscription", 0.01, "mil"),
+    (r"비핵심 인구 \+(\d+)%", "non_core_manpower", 0.01, "mil"),
+    (r"인구 증가 \+(\d+)%", "monthly_population", 0.01, "mil"),
     (r"일일 정치력 ([+-][\d.]+)", "political_power_gain", 1, "state"),
     (r"정치력 획득 \+(\d+)%", "political_power_factor", 0.01, "state"),
     (r"(?<!획득 )정치력 \+(\d+)%", "political_power_factor", 0.01, "state"),
@@ -171,6 +173,8 @@ def rewards(effect):
             out.append(f"recruit_character = {character}")
     if (n := num(effect, r"(?<!일일 )(?<!획득 )정치력 \+(\d+)(?![\d%])")):
         out.append(f"add_political_power = {n}")
+    if (n := num(effect, r"병력 \+(\d+)천")):
+        out.append(f"add_manpower = {n * 1000}")
     if (n := num(effect, r"민간공장 \+(\d+)(?![\d%])")):
         out.append(f"add_offsite_building = {{ type = industrial_complex level = {n} }}")
     if (n := num(effect, r"군수공장 \+(\d+)(?![\d%])")):

@@ -55,7 +55,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_late_rebuild_c_4 = {
@@ -118,7 +118,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_com_adv_3 = {
@@ -169,7 +169,7 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
-				conscription = 0.04
+				conscription = 0.02
 			}
 		}
 		GJ_idea_com_trotsky_y_4 = {
@@ -183,7 +183,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_com_bukharin_1 = {
@@ -201,6 +201,13 @@ ideas = {
 				industrial_capacity_factory = 0.1
 			}
 		}
+		GJ_idea_com_bukharin_a2_4 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
+			}
+		}
 		GJ_idea_com_bukharin_b2_4 = {
 			allowed = { always = no }
 			removal_cost = -1
@@ -208,11 +215,18 @@ ideas = {
 				industrial_capacity_factory = 0.1
 			}
 		}
+		GJ_idea_com_bukharin_x_4 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
+			}
+		}
 		GJ_idea_com_bukharin_y_4 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.04
+				conscription = 0.02
 			}
 		}
 		GJ_idea_com_bukharin_cap_3 = {
@@ -233,21 +247,21 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.1
+				conscription = 0.05
 			}
 		}
 		GJ_idea_com_anarchy_end_5 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_com_anarchy_b2_4 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 				army_org_factor = 0.1
 			}
 		}
@@ -307,6 +321,13 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				production_factory_efficiency_gain_factor = 0.1
+			}
+		}
+		GJ_idea_dem_social_labor_5 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
 			}
 		}
 		GJ_idea_dem_social_end_5 = {
@@ -412,7 +433,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_dem_conserv_end_5 = {
@@ -540,7 +561,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.08
+				conscription = 0.04
 			}
 		}
 		GJ_idea_fas_clerical_church_3 = {
@@ -614,11 +635,18 @@ ideas = {
 				political_power_gain = 0.2
 			}
 		}
+		GJ_idea_neu_caudillo_a2_4 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
 		GJ_idea_neu_junta_x_4 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_neu_junta_cap_3 = {
@@ -657,6 +685,13 @@ ideas = {
 				industrial_capacity_factory = 0.1
 			}
 		}
+		GJ_idea_neu_pres_x_4 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
 		GJ_idea_neu_kemal_x_4 = {
 			allowed = { always = no }
 			removal_cost = -1
@@ -676,7 +711,14 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				industrial_capacity_factory = 0.05
-				conscription = 0.03
+				conscription = 0.02
+			}
+		}
+		GJ_idea_neu_conserv_a2_4 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
 			}
 		}
 		GJ_idea_neu_conserv_x_4 = {
@@ -686,12 +728,26 @@ ideas = {
 				industrial_capacity_factory = 0.1
 			}
 		}
+		GJ_idea_neu_agrarian_end_5 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
+			}
+		}
+		GJ_idea_neu_agrarian_a2_4 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				monthly_population = 0.1
+			}
+		}
 		GJ_idea_neu_agrarian_b2_4 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
 				army_org_factor = 0.1
-				conscription = 0.04
+				conscription = 0.02
 			}
 		}
 		GJ_idea_neu_agrarian_x_4 = {
@@ -705,7 +761,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.08
+				conscription = 0.04
 			}
 		}
 		GJ_idea_neu_theocracy_y_4 = {
@@ -719,7 +775,7 @@ ideas = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
 			}
 		}
 		GJ_idea_dip_axis_aid_5 = {
@@ -750,6 +806,13 @@ ideas = {
 				army_defence_factor = 0.1
 			}
 		}
+		GJ_idea_dip_leader_econ_2 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
 		GJ_idea_dip_leader_econ_5 = {
 			allowed = { always = no }
 			removal_cost = -1
@@ -778,13 +841,15 @@ ideas = {
 			removal_cost = -1
 			modifier = {
 				surrender_limit = 0.2
+				non_core_manpower = 0.1
 			}
 		}
 		GJ_idea_sub_arms_4 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.06
+				conscription = 0.03
+				monthly_population = 0.12
 			}
 		}
 		GJ_idea_sub_loyal_b_4 = {
@@ -794,6 +859,13 @@ ideas = {
 				industrial_capacity_factory = 0.1
 			}
 		}
+		GJ_idea_sub_loyal_c_3 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
 		GJ_idea_sub_build_d_4 = {
 			allowed = { always = no }
 			removal_cost = -1
@@ -801,11 +873,32 @@ ideas = {
 				army_defence_factor = 0.2
 			}
 		}
+		GJ_idea_sub_rk_5 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
+		GJ_idea_sub_rk_b_3 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
+		GJ_idea_sub_collab_5 = {
+			allowed = { always = no }
+			removal_cost = -1
+			modifier = {
+				non_core_manpower = 0.1
+			}
+		}
 		GJ_idea_sub_collab_b_3 = {
 			allowed = { always = no }
 			removal_cost = -1
 			modifier = {
-				conscription = 0.08
+				conscription = 0.04
 			}
 		}
 		GJ_idea_suz_comm_4 = {
