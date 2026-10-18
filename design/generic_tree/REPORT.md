@@ -1,9 +1,16 @@
-# 작업 보고서 — 기본 중점 개편 0.6.0
+# 작업 보고서 — 기본 중점 개편 0.6.1
 
 - 작성: Claude, 2026-10-12 23:30 (KST)
 - 저장소: `skleton12/Hoi4_focus` · 브랜치: `main` (0.4.4 까지는 `skleton12/hoi4_-` 의 `claude/brave-bardeen-n1yqiz`)
 - 대상 게임: HOI4 1.19.3.0.c01a (5632)
 
+
+## 0-22. 0.6.1 아이콘 (2026-10-18 KST)
+
+- 갈래마다 아이콘 하나(모드에 복사한 6종)를 쓰던 것을, 칸마다 이름·효과 키워드로 **바닐라 기본 중점 아이콘 36종** 중에서 고르게 했다
+  (`build_mod.py` 의 `ICON_RULES`). 예: 잠수함 → `GFX_goal_generic_navy_submarine`, 영유권 → `GFX_goal_generic_demand_territory`,
+  정부를 공산주의로 → `GFX_goal_support_communism`. 맞는 규칙이 없으면 갈래 기본 아이콘.
+- 바닐라 `interface/goals.gfx` 의 이름을 그대로 쓴다. 게임 파일에서 이름을 직접 대조하지는 않았다. 없는 이름이면 그 칸만 빈 아이콘이 되고 error.log 에 남는다.
 
 ## 0-21. 0.6.0 효과 개선 (2026-10-18 KST)
 

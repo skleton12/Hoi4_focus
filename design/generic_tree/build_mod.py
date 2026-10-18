@@ -398,6 +398,61 @@ def focus_id(gid, i):
     return f"{PREFIX}_{gid}_{i}"
 
 
+# 칸마다 이름·효과에 맞는 바닐라 기본 중점 아이콘(바닐라 interface/goals.gfx 에 있는 이름)을 고른다. 위에서부터 먼저 맞는 것.
+ICON_RULES = [
+    (r"정부를 공산주의|공산주의 지지율|코민테른|인민|혁명", "GFX_goal_support_communism"),
+    (r"정부를 민주주의|민주주의 지지율|민주 지지율|연합국|선거|의회", "GFX_goal_support_democracy"),
+    (r"정부를 파시즘|파시즘 지지율|추축국|국민 정부", "GFX_goal_support_fascism"),
+    (r"정부를 비동맹|비동맹 지지율|중립", "GFX_goal_generic_neutrality_focus"),
+    (r"진영|가입|보장", "GFX_goal_generic_major_alliance"),
+    (r"동맹|협약|조약|외교", "GFX_goal_generic_alliance"),
+    (r"영유권|정당화|전쟁 목표", "GFX_goal_generic_demand_territory"),
+    (r"점령지|괴뢰국|자치도", "GFX_goal_generic_occupy_states_ongoing_war"),
+    (r"잠수함|통상 파괴", "GFX_goal_generic_navy_submarine"),
+    (r"항모", "GFX_goal_generic_navy_carrier"),
+    (r"주력함|대양", "GFX_goal_generic_navy_battleship"),
+    (r"순양함|연안|초계", "GFX_goal_generic_navy_cruiser"),
+    (r"조선소|수송선|항만", "GFX_goal_generic_construct_naval_dockyard"),
+    (r"해군|함대|해병|상륙", "GFX_goal_generic_navy_doctrines_tactics"),
+    (r"근접 지원|급강하", "GFX_goal_generic_CAS"),
+    (r"폭격", "GFX_goal_generic_air_bomber"),
+    (r"비행장|항공기 공장|항공 산업", "GFX_goal_generic_air_production"),
+    (r"전투기|공군|항공|방공", "GFX_goal_generic_air_fighter"),
+    (r"로켓|핵|제트|비밀 무기", "GFX_goal_generic_secret_weapon"),
+    (r"레이더", "GFX_goal_generic_radar"),
+    (r"기갑|전차|차량|기동", "GFX_goal_generic_army_tanks"),
+    (r"포병|대전차|야포", "GFX_goal_generic_army_artillery"),
+    (r"특수|산악|공수|정예", "GFX_goal_generic_special_forces"),
+    (r"보병 장비|소총|무기", "GFX_goal_generic_small_arms"),
+    (r"요새|참호|방어전|국경", "GFX_goal_generic_fortify_city"),
+    (r"육군|사단|장교|징집|민병|군대|국방", "GFX_goal_generic_army_doctrines"),
+    (r"합성|석유|정유|연료", "GFX_goal_generic_oil_refinery"),
+    (r"교류|협력|기술 이전|원조", "GFX_goal_generic_scientific_exchange"),
+    (r"연구|기술|과학|대학|교육|학교", "GFX_goal_generic_research"),
+    (r"군수공장|군수|병기", "GFX_goal_generic_construct_mil_factory"),
+    (r"인프라|철도|도로|운하|전력", "GFX_goal_generic_construct_infrastructure"),
+    (r"민간공장|건설", "GFX_goal_generic_construct_civ_factory"),
+    (r"생산|효율|자원|강철|광산|채굴|공업", "GFX_goal_generic_production"),
+    (r"전쟁 지원|선전|언론|영웅", "GFX_goal_generic_propaganda"),
+    (r"안정도|통합|화합|단결", "GFX_goal_generic_national_unity"),
+]
+BRANCH_ICON = {
+    "industry": "GFX_goal_generic_construct_civ_factory",
+    "military": "GFX_goal_generic_army_doctrines",
+    "politics": "GFX_goal_generic_political_pressure",
+    "diplomacy": "GFX_goal_generic_alliance",
+    "independence": "GFX_goal_generic_political_pressure",
+}
+
+
+def icon_for(branch, name, effect):
+    text = f"{name} {effect}"
+    for pattern, icon in ICON_RULES:
+        if re.search(pattern, text):
+            return icon
+    return BRANCH_ICON.get(branch, "GFX_goal_generic_political_pressure")
+
+
 def split_spirit(effect):
     """% 효과(MODIFIERS) 조각을 떼어 국가 정신 수정자로 돌려준다. (수정자 dict, 나머지 효과 문구)"""
     mods, rest = {}, []
@@ -472,7 +527,7 @@ def build():
             x = x_offset + int(round(pos[g["id"]][0] * 2))
             for i, f in enumerate(g["focuses"], 1):
                 fid = focus_id(g["id"], i)
-                block = [f"\tfocus = {{", f"\t\tid = {fid}", f"\t\ticon = {icon}",
+                block = [f"\tfocus = {{", f"\t\tid = {fid}", f"\t\ticon = {icon_for(b['branch'], f['name'], f['effect'])}",
                          f"\t\tx = {x}", f"\t\ty = {start[g['id']] + i - 1}",
                          f"\t\tcost = {f['days'] // 7}"]
                 if i == 1:
