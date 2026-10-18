@@ -1,7 +1,9 @@
 ﻿# 기본 중점 변경 모드 설치 (install.bat 이 부른다)
 # 하는 일 (정확히):
 #  - 이 모드가 깔린 폴더(gibon_jungjeom, new_focus 등)마다, 먼저 지금 내용을 mod\_gj_backup\<폴더>_<시각> 에 복사해 두고
-#    폴더 내용을 새 버전으로 바꾼다. .mod 의 name·path 는 그대로 둔다(런처 플레이세트 유지).
+#    폴더 내용을 새 버전으로 바꾼다. path 는 그대로, name 은 폴더마다 다르게 쓴다
+#    (gibon_jungjeom = 「기본 중점 변경 모드」, 나머지 = 「기본 중점 변경 모드 - 폴더」). 같은 name 이 여럿이면 모드가 안 켜진다.
+#  - dlc_load.json 에서 이 모드는 gibon_jungjeom 하나만 켠다(다른 모드 항목은 그대로, 원본은 .bak).
 #  - 0.4.7 이 mod\_gj_backup 으로 옮긴 이 모드의 .mod·폴더는 원래 자리에 없을 때만 되돌린다.
 #  - 다른 모드는 건드리지 않는다. 런처에서 켜진 .mod 를 옮기거나 지우지 않는다.
 $ErrorActionPreference = 'Stop'
@@ -41,9 +43,12 @@ function Is-Ours($dir) {
 function Update-Copy($hoi, $modFile) {
     # 기존 .mod 의 name·path 를 그대로 두고 내용과 버전만 바꾼다(런처 플레이세트가 그대로 유지된다)
     $old = [IO.File]::ReadAllText($modFile, [Text.Encoding]::UTF8)
-    $name = [regex]::Match($old, $nameRe).Groups[1].Value
     $path = [regex]::Match($old, $pathRe).Groups[1].Value
     $dir = Resolve-ModDir $hoi $path
+    # 런처 이름은 반드시 서로 달라야 한다. 같은 name 이 여럿이면 런처가 모드를 켜지 못해 바닐라 트리가 나온다.
+    $base = [regex]::Match($srcText, $nameRe).Groups[1].Value
+    $leaf = Split-Path -Leaf $dir
+    $name = if ($leaf -eq 'gibon_jungjeom') { $base } else { "$base - $leaf" }
     if (Test-Path -LiteralPath $dir) {
         # 지우기 전에 지금 내용을 복사해 둔다(백업 폴더에는 .mod 가 없어 게임이 읽지 않는다)
         $bk = Join-Path (Join-Path $hoi 'mod\_gj_backup') ((Split-Path -Leaf $dir) + '_' + (Get-Date -Format 'yyyyMMdd_HHmmss'))
@@ -54,7 +59,7 @@ function Update-Copy($hoi, $modFile) {
     }
     Copy-Item -LiteralPath (Join-Path $src 'gibon_jungjeom') -Destination $dir -Recurse -Force
     $text = [regex]::Replace($srcText, '(?m)^\s*path\s*=\s*"[^"]*"', "path=`"$path`"")
-    if ($name) { $text = [regex]::Replace($text, '(?m)^\s*name\s*=\s*"[^"]*"', "name=`"$name`"") }
+    $text = [regex]::Replace($text, '(?m)^\s*name\s*=\s*"[^"]*"', "name=`"$name`"")
     [IO.File]::WriteAllText($modFile, $text, $utf8NoBom)
     $inner = [regex]::Replace($text, '(?m)^\s*path\s*=\s*"[^"]*"\r?\n?', '')
     [IO.File]::WriteAllText((Join-Path $dir 'descriptor.mod'), $inner, $utf8NoBom)
@@ -111,6 +116,26 @@ if (-not $any) {
     Update-Copy $hoi $modFile
 }
 
+# 4) 게임이 바로 읽는 dlc_load.json 에서 이 모드는 gibon_jungjeom 하나만 켠다 (다른 모드는 그대로)
+foreach ($hoi in $cands) {
+    $dlc = Join-Path $hoi 'dlc_load.json'
+    if (-not (Test-Path -LiteralPath $dlc)) { continue }
+    if (-not (Test-Path -LiteralPath (Join-Path $hoi 'mod\gibon_jungjeom.mod'))) { continue }
+    try { $json = Get-Content -LiteralPath $dlc -Raw -Encoding UTF8 | ConvertFrom-Json } catch { continue }
+    $keep = @()
+    foreach ($e in @($json.enabled_mods)) {
+        $leaf = (($e -split '[\\/]')[-1]) -replace '\.mod$', ''
+        $edir = Join-Path $hoi ('mod\' + $leaf)
+        if ($leaf -ne 'gibon_jungjeom' -and (Is-Ours $edir)) { continue }
+        $keep += $e
+    }
+    if ($keep -notcontains 'mod/gibon_jungjeom.mod') { $keep += 'mod/gibon_jungjeom.mod' }
+    $json.enabled_mods = $keep
+    Copy-Item -LiteralPath $dlc -Destination "$dlc.bak" -Force
+    [IO.File]::WriteAllText($dlc, ($json | ConvertTo-Json -Depth 5), $utf8NoBom)
+    Write-Host "  dlc_load.json: 이 모드는 gibon_jungjeom 하나만 켬 (백업 dlc_load.json.bak)"
+}
+
 Write-Host ""
-Write-Host "완료 (v$ver). 런처 플레이세트에서 '기본 중점 변경 모드' 가 켜져 있는지 확인하고 실행하세요."
+Write-Host "완료 (v$ver). 런처에서 「기본 중점 변경 모드」 하나만 켜고(이름 뒤에 - 가 붙은 것은 끄고) 실행하세요."
 Write-Host "중점에 마우스를 올리면 설명 끝에 (v$ver) 가 보여야 합니다."
