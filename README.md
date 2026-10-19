@@ -25,6 +25,7 @@ Hearts of Iron IV 의 **기본(제네릭) 국가 중점 트리**를 새로 짠 �
 | `design/generic_tree/build_mod.py` | 설계 → 모드 파일 생성기 |
 | `design/generic_tree/check.py` | 설계 데이터 검사 |
 | `design/generic_tree/render.py` | 트리 그림 → `design/generic_tree/img/` |
+| `design/generic_tree/DESIGN_REPORT.md` | 설계 보고서 (구조·시스템·수치, 기획서 참고용) |
 | `design/generic_tree/REPORT.md` | 변경 내역 · 확인 결과 |
 | `design/generic_tree/EFFECT_STATUS.md` | 효과 작동 현황 (문구만 있는 효과 목록) |
 | `design/generic_tree/AGENTS.md`, `SPEC.md` | 작업 규칙 · 데이터 형식 |
